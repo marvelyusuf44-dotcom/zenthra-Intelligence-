@@ -1,0 +1,163 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Zenthra crypto intelligence API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: markets
+  - name: signals
+  - name: wallets
+  - name: chat
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /markets:
+    get:
+      operationId: getMarkets
+      tags: [markets]
+      summary: Get market snapshot
+      responses:
+        "200":
+          description: Market data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Market"
+  /signals:
+    get:
+      operationId: getSignals
+      tags: [signals]
+      summary: Get scored trading signals
+      parameters:
+        - name: symbol
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Signals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signal"
+  /wallet/{address}:
+    get:
+      operationId: getWallet
+      tags: [wallets]
+      summary: Analyze a Solana wallet
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema: { type: string, minLength: 32 }
+      responses:
+        "200":
+          description: Wallet analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletAnalysis"
+  /chat:
+    post:
+      operationId: sendChat
+      tags: [chat]
+      summary: Ask the Zenthra AI analyst
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatInput"
+      responses:
+        "200":
+          description: Assistant reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatReply"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
+    Market:
+      type: object
+      required: [rank, name, symbol, price, change24h, volume24h, marketCap]
+      properties:
+        rank: { type: number }
+        name: { type: string }
+        symbol: { type: string }
+        price: { type: number }
+        change24h: { type: number }
+        volume24h: { type: number }
+        marketCap: { type: number }
+    Signal:
+      type: object
+      required: [pair, direction, score, entry, stopLoss, takeProfit, timeframe]
+      properties:
+        pair: { type: string }
+        direction: { type: string, enum: [LONG, SHORT, HOLD] }
+        score: { type: number }
+        entry: { type: number }
+        stopLoss: { type: number }
+        takeProfit: { type: number }
+        takeProfit2: { type: ["number", "null"] }
+        timeframe: { type: string }
+        reasoning: { type: ["string", "null"] }
+    WalletToken:
+      type: object
+      required: [name, symbol]
+      properties:
+        name: { type: string }
+        symbol: { type: string }
+        amount: { type: ["number", "null"] }
+    WalletAnalysis:
+      type: object
+      required: [address, solBalance, tokenCount, tokens]
+      properties:
+        address: { type: string }
+        solBalance: { type: number }
+        tokenCount: { type: number }
+        tokens:
+          type: array
+          items: { $ref: "#/components/schemas/WalletToken" }
+        error: { type: ["string", "null"] }
+    ChatMessage:
+      type: object
+      required: [role, text]
+      properties:
+        role: { type: string, enum: [user, assistant] }
+        text: { type: string }
+    ChatInput:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string, minLength: 1 }
+        history:
+          type: array
+          items: { $ref: "#/components/schemas/ChatMessage" }
+    ChatReply:
+      type: object
+      required: [reply]
+      properties:
+        reply: { type: string }

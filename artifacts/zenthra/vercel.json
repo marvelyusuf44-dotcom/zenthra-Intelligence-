@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @workspace/zenthra run build",
+  "outputDirectory": "dist/public",
+  "installCommand": "echo 'install handled by buildCommand (pnpm workspace)'",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

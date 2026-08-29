@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Zenthra Crypto Intelligence"
+description = "A crypto intelligence workspace for exploring live markets, Solana wallet activity, on-chain signals, and AI-powered analysis in one focused interface."
+version = "1.0.0"
+id = "artifacts/zenthra"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24306
+
+[services.development]
+run = "pnpm --filter @workspace/zenthra run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/zenthra", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/zenthra/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24306"
+BASE_PATH = "/"
