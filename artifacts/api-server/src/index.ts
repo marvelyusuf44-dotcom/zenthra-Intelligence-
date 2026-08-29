@@ -1,7 +1,11 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { createServer } from "node:http";
-import { Server } from "socket.io";
+
+// Socket.io dicabut — cek dulu (frontend/src/App.tsx dkk) dan ternyata gak
+// ada satu pun kode di dashboard yang beneran konsumsi koneksinya. Ini bikin
+// API server bisa jalan sebagai Vercel serverless function (lihat api/index.ts),
+// bukan cuma long-running process kayak sebelumnya.
 
 const rawPort = process.env["PORT"];
 
@@ -18,13 +22,6 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: { origin: true, credentials: true } });
-io.on("connection", (socket) => {
-  socket.emit("connected", { service: "zenthra-realtime" });
-});
-setInterval(() => {
-  io.emit("market:tick", { at: new Date().toISOString(), source: "coingecko" });
-}, 30_000);
 
 httpServer.listen(port, (err) => {
   if (err) {
