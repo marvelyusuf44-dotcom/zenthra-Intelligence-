@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { deleteRows, insertRow, listRows, supabaseRequest } from "../services/supabase";
 import { cached } from "../services/cache";
-import { fetchMarkets, fetchWallet, signals } from "../lib/zenthra-data";
+import { fetchMarkets, fetchWallet } from "../lib/zenthra-data";
 
 const router: IRouter = Router();
 const watchInput = z.object({ kind: z.enum(["token", "wallet"]), value: z.string().min(1).max(120), label: z.string().max(80).optional() });
@@ -43,7 +43,7 @@ router.get("/token/:symbol/similar", async (_req, res) => {
 });
 
 router.get("/wallet/:address/risk", requireAuth, async (req, res) => {
-  const wallet = await fetchWallet(req.params.address);
+  const wallet = await fetchWallet(String(req.params.address));
   const score = wallet.error ? 0 : Math.min(100, Math.round(42 + wallet.tokenCount * 4));
   return res.json({ address: req.params.address, score, label: score >= 70 ? "smart money" : score >= 45 ? "active trader" : "needs review" });
 });
@@ -64,11 +64,11 @@ router.get("/history", requireAuth, async (req, res) => {
   catch (error) { req.log.error({ error }, "history failed"); return res.status(503).json({ error: "Chat history is unavailable. Confirm the Supabase schema is installed." }); }
 });
 router.get("/history/:id", requireAuth, async (req, res) => {
-  try { const rows = await listRows("zenthra_messages", `select=id,role,text,created_at&chat_id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}&order=created_at.asc`); return res.json(rows); }
+  try { const rows = await listRows("zenthra_messages", `select=id,role,text,created_at&chat_id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}&order=created_at.asc`); return res.json(rows); }
   catch (error) { req.log.error({ error }, "chat detail failed"); return res.status(503).json({ error: "Chat history is unavailable." }); }
 });
 router.delete("/history/:id", requireAuth, async (req, res) => {
-  try { await deleteRows("zenthra_chats", `id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
+  try { await deleteRows("zenthra_chats", `id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
   catch (error) { req.log.error({ error }, "chat delete failed"); return res.status(503).json({ error: "Chat could not be deleted." }); }
 });
 
@@ -83,7 +83,7 @@ router.post("/watchlist", requireAuth, async (req, res) => {
   catch (error) { req.log.error({ error }, "watchlist add failed"); return res.status(503).json({ error: "Watchlist is unavailable." }); }
 });
 router.delete("/watchlist/:id", requireAuth, async (req, res) => {
-  try { await deleteRows("zenthra_watchlist", `id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
+  try { await deleteRows("zenthra_watchlist", `id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
   catch (error) { req.log.error({ error }, "watchlist delete failed"); return res.status(503).json({ error: "Watchlist item could not be deleted." }); }
 });
 
@@ -100,11 +100,11 @@ router.post("/alerts", requireAuth, async (req, res) => {
 router.put("/alerts/:id", requireAuth, async (req, res) => {
   const active = z.object({ active: z.boolean() }).safeParse(req.body);
   if (!active.success) return res.status(400).json({ error: "Alert state is invalid." });
-  try { return res.json(await supabaseRequest(`zenthra_alerts?id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: active.data })); }
+  try { return res.json(await supabaseRequest(`zenthra_alerts?id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: active.data })); }
   catch (error) { req.log.error({ error }, "alert update failed"); return res.status(503).json({ error: "Alert could not be updated." }); }
 });
 router.delete("/alerts/:id", requireAuth, async (req, res) => {
-  try { await deleteRows("zenthra_alerts", `id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
+  try { await deleteRows("zenthra_alerts", `id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}`); return res.status(204).send(); }
   catch (error) { req.log.error({ error }, "alert delete failed"); return res.status(503).json({ error: "Alert could not be deleted." }); }
 });
 

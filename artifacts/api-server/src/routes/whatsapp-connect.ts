@@ -110,7 +110,7 @@ router.delete("/whatsapp/connect/:id", requireAuth, async (req, res) => {
   try {
     // Soft-delete: tandai revoked, bukan hard-delete — biar histori tetap ada buat audit.
     await supabaseRequest(
-      `zenthra_wa_connections?id=eq.${encodeURIComponent(req.params.id)}&user_id=eq.${encodeURIComponent(req.user!.id)}`,
+      `zenthra_wa_connections?id=eq.${encodeURIComponent(String(req.params.id))}&user_id=eq.${encodeURIComponent(req.user!.id)}`,
       { method: "PATCH", headers: { Prefer: "return=minimal" }, body: { status: "revoked" } },
     );
     return res.status(204).send();
