@@ -88,7 +88,7 @@ export async function runChat(
           content: [{ type: "text", text: `${ZENTHRA_PERSONA}\n\nConversation so far:\n${transcript}\n\nUser: ${message}` }],
         },
       ],
-      tools: TOOLS,
+      tools: TOOLS as any,
     });
 
     let guard = 0;
@@ -136,7 +136,7 @@ export async function runChat(
       interaction = await ai.interactions.create({
         model: "gemini-2.5-flash",
         input: results,
-        tools: TOOLS,
+        tools: TOOLS as any,
         previous_interaction_id: interaction.id,
       });
       guard++;
