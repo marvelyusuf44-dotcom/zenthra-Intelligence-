@@ -42,7 +42,7 @@ export async function makeSticker(imageInput: { url?: string; base64?: string })
 
   // Coba kualitas makin rendah sampai muat di bawah 100KB (syarat WhatsApp).
   for (const quality of [80, 60, 45, 30]) {
-    const sharpFn: any = (sharp as any).default ?? sharp;
+    const sharpFn: any = (await import("sharp")).default;
     const webp = await sharpFn(buffer)
       .resize(512, 512, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .webp({ quality })
