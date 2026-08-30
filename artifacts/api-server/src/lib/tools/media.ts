@@ -16,7 +16,12 @@
 //    begitu kamu punya API key-nya. Sekarang balikin pesan "belum dikonfigurasi"
 //    yang jujur, bukan hasil palsu.
 
-import sharp from "sharp";
+// sharp DILOAD LAZY (dynamic import di dalam makeSticker), BUKAN top-level.
+// Alasan: file ini ke-import berantai lewat routes/index.ts → whatsapp.ts →
+// chat-engine.ts → tools/index.ts → media.ts — kalau sharp gagal load
+// (native binary belum ke-build, misal build script-nya di-skip di Vercel),
+// import top-level bikin SELURUH app crash pas module load, bukan cuma fitur
+// stickernya. Dynamic import mengisolasi kegagalannya ke fungsi ini aja.
 import { doFetch } from "../http";
 
 const MAX_DOWNLOAD_BYTES = 15 * 1024 * 1024; // 15MB, batas wajar buat direct file link
@@ -40,9 +45,18 @@ export async function makeSticker(imageInput: { url?: string; base64?: string })
     throw new Error("Butuh `url` atau `base64` gambar sumber.");
   }
 
+  let sharpFn: any;
+  try {
+    const sharpModule: any = await import("sharp");
+    sharpFn = sharpModule.default ?? sharpModule;
+  } catch (error) {
+    throw new Error(
+      `Sticker maker belum bisa dipakai — library gambar (sharp) gagal dimuat di server: ${error instanceof Error ? error.message : error}`,
+    );
+  }
+
   // Coba kualitas makin rendah sampai muat di bawah 100KB (syarat WhatsApp).
   for (const quality of [80, 60, 45, 30]) {
-    const sharpFn: any = (await import("sharp")).default;
     const webp = await sharpFn(buffer)
       .resize(512, 512, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .webp({ quality })

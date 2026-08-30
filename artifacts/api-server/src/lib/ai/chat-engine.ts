@@ -12,7 +12,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { ZENTHRA_PERSONA } from "./persona";
-import { TOOLS, executeTool } from "../tools";
+import { TOOLS, executeTool } from "../tools/index.js";
 
 export interface ChatHistoryItem {
   role: "user" | "assistant";
@@ -88,7 +88,9 @@ export async function runChat(
           content: [{ type: "text", text: `${ZENTHRA_PERSONA}\n\nConversation so far:\n${transcript}\n\nUser: ${message}` }],
         },
       ],
-      tools: TOOLS as any,
+      // [...TOOLS]: TOOLS didefinisikan `as const` (readonly) di lib/tools/index.ts,
+      // sedangkan SDK Gemini minta array yang mutable — spread bikin array baru.
+      tools: [...TOOLS],
     });
 
     let guard = 0;
@@ -136,7 +138,7 @@ export async function runChat(
       interaction = await ai.interactions.create({
         model: "gemini-2.5-flash",
         input: results,
-        tools: TOOLS as any,
+        tools: [...TOOLS],
         previous_interaction_id: interaction.id,
       });
       guard++;

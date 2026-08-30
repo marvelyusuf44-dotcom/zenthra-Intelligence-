@@ -3,7 +3,6 @@ packages:
   - lib/*
   - lib/integrations/*
   - scripts
-  - sharp
 
 autoInstallPeers: false
 
@@ -45,6 +44,7 @@ onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
   - msw
+  - sharp
   - unrs-resolver
 
 overrides:
