@@ -5,6 +5,13 @@
 // akan jalan begitu API server ini di-deploy ke Railway/di luar Replit.
 // Sekarang pakai koneksi REST langsung ke Supabase pakai SUPABASE_URL +
 // SUPABASE_SERVICE_ROLE_KEY (lihat .env.example) — portable di platform mana pun.
+//
+// DIPERBAIKI LAGI: Supabase punya 2 format key sekarang —
+//   - Legacy (JWT, diawali "eyJ"): perlu dikirim di header apikey DAN
+//     Authorization Bearer.
+//   - Baru (opaque, diawali "sb_secret_..."): CUMA boleh di header apikey —
+//     dikirim di Authorization Bearer malah ditolak Supabase.
+// Kode di bawah deteksi otomatis formatnya, jadi jalan buat dua-duanya.
 
 type SupabaseRow = Record<string, unknown>;
 
@@ -22,11 +29,12 @@ export async function supabaseRequest<T = SupabaseRow | SupabaseRow[]>(
   init: { method?: string; body?: unknown; headers?: Record<string, string> } = {},
 ): Promise<T> {
   const { url, key } = requireEnv();
+  const isLegacyJwtKey = key.startsWith("eyJ"); // format lama = JWT, selalu diawali "eyJ"
   const response = await fetch(`${url}/rest/v1/${path}`, {
     method: init.method ?? "GET",
     headers: {
       apikey: key,
-      authorization: `Bearer ${key}`,
+      ...(isLegacyJwtKey ? { authorization: `Bearer ${key}` } : {}),
       accept: "application/json",
       "content-type": "application/json",
       ...(init.headers ?? {}),
