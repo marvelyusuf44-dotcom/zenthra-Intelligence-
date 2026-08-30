@@ -1,6 +1,8 @@
 {
   "framework": null,
   "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "mkdir -p public",
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ]
