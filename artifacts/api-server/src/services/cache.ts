@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 type Entry = { value: unknown; expiresAt: number };
 const local = new Map<string, Entry>();
