@@ -13,8 +13,17 @@ const app: Express = express();
 // bawah moduleResolution "bundler" — walau runtime-nya (baik esbuild buat
 // Render, maupun Vercel Node runtime) tetap kerja normal. Ini murni masalah
 // TIPE, bukan bug jalan, jadi kita cast ke `any` di titik panggilnya aja.
+//
+// DIPERBAIKI LAGI: ternyata bukan cuma soal tipe — di runtime Vercel, module
+// ini BENERAN bisa muncul terbungkus di properti `.default` (bukan langsung
+// callable). Pola `(x as any).default ?? x` ini aman buat DUA kemungkinan
+// bentuk sekaligus, gak asal maksa panggil kayak sebelumnya.
+const pinoHttpFn: any = (pinoHttp as any).default ?? pinoHttp;
+const helmetFn: any = (helmet as any).default ?? helmet;
+const rateLimitFn: any = (rateLimit as any).default ?? rateLimit;
+
 app.use(
-  (pinoHttp as any)({
+  pinoHttpFn({
     logger,
     serializers: {
       req(req: ExpressRequest & { id?: unknown }) {
@@ -32,8 +41,8 @@ app.use(
     },
   }),
 );
-app.use((helmet as any)({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-app.use((rateLimit as any)({ windowMs: 60_000, limit: 120, standardHeaders: "draft-7", legacyHeaders: false, message: { error: "Too many requests. Please try again shortly." } }));
+app.use(helmetFn({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(rateLimitFn({ windowMs: 60_000, limit: 120, standardHeaders: "draft-7", legacyHeaders: false, message: { error: "Too many requests. Please try again shortly." } }));
 
 // CORS — sebelumnya cors() polos allow SEMUA origin. Sekarang dikunci ke
 // domain yang emang butuh akses (landing page + dashboard web app + WhatsApp
