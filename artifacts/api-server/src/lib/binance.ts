@@ -4,6 +4,7 @@
 // Sengaja dipisah dari lib/scoring/* biar engine tetap pure & gampang di-unit-test.
 
 import type { Candles } from './scoring/types';
+import { doFetch } from './http';
 
 const BASE_REST = 'https://fapi.binance.com';
 const MIN_VOLUME_USD = 500_000; // sama seperti MIN_VOLUME_USD di config.py bot Python
@@ -21,7 +22,7 @@ type BinanceKline = [
 async function fetchJson<T>(url: string, retries = 3): Promise<T | null> {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+      const res = await doFetch(url, { signal: AbortSignal.timeout(10_000) });
       if (res.ok) return (await res.json()) as T;
     } catch {
       // retry

@@ -17,6 +17,7 @@
 //    yang jujur, bukan hasil palsu.
 
 import sharp from "sharp";
+import { doFetch } from "../http";
 
 const MAX_DOWNLOAD_BYTES = 15 * 1024 * 1024; // 15MB, batas wajar buat direct file link
 const STICKER_MAX_BYTES = 100 * 1024; // syarat resmi WhatsApp buat stiker statis
@@ -32,7 +33,7 @@ export async function makeSticker(imageInput: { url?: string; base64?: string })
   if (imageInput.base64) {
     buffer = Buffer.from(imageInput.base64, "base64");
   } else if (imageInput.url) {
-    const res = await fetch(imageInput.url);
+    const res = await doFetch(imageInput.url);
     if (!res.ok) throw new Error(`Gagal ambil gambar (${res.status}).`);
     buffer = Buffer.from(await res.arrayBuffer());
   } else {
@@ -71,7 +72,7 @@ export async function downloadFromUrl(url: string): Promise<DownloadResult> {
     );
   }
 
-  const res = await fetch(url);
+  const res = await doFetch(url);
   if (!res.ok) throw new Error(`Gagal unduh (${res.status}).`);
   const contentLength = Number(res.headers.get("content-length") ?? 0);
   if (contentLength > MAX_DOWNLOAD_BYTES) throw new Error("File lebih besar dari batas 15MB.");

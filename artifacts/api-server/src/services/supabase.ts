@@ -13,6 +13,8 @@
 //     dikirim di Authorization Bearer malah ditolak Supabase.
 // Kode di bawah deteksi otomatis formatnya, jadi jalan buat dua-duanya.
 
+import { doFetch } from "../lib/http";
+
 type SupabaseRow = Record<string, unknown>;
 
 function requireEnv() {
@@ -30,7 +32,7 @@ export async function supabaseRequest<T = SupabaseRow | SupabaseRow[]>(
 ): Promise<T> {
   const { url, key } = requireEnv();
   const isLegacyJwtKey = key.startsWith("eyJ"); // format lama = JWT, selalu diawali "eyJ"
-  const response = await fetch(`${url}/rest/v1/${path}`, {
+  const response = await doFetch(`${url}/rest/v1/${path}`, {
     method: init.method ?? "GET",
     headers: {
       apikey: key,

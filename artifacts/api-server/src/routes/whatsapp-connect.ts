@@ -25,6 +25,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { insertRow, listRows, supabaseRequest } from "../services/supabase";
 import { encryptSecret } from "../lib/security/crypto";
+import { doFetch } from "../lib/http";
 
 const router: IRouter = Router();
 const GRAPH_API_VERSION = "v21.0";
@@ -62,7 +63,7 @@ router.post("/whatsapp/connect/callback", requireAuth, async (req, res) => {
     tokenUrl.searchParams.set("client_secret", appSecret);
     tokenUrl.searchParams.set("code", parsed.data.code);
 
-    const tokenRes = await fetch(tokenUrl.toString());
+    const tokenRes = await doFetch(tokenUrl.toString());
     if (!tokenRes.ok) {
       const detail = await tokenRes.text().catch(() => "");
       req.log.error({ detail, status: tokenRes.status }, "whatsapp token exchange failed");

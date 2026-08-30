@@ -1,4 +1,5 @@
 import { GetMarketsResponse, GetWalletResponse } from "@workspace/api-zod";
+import { doFetch } from "./http";
 
 const COIN_IDS = [
   ["bitcoin", "BTC", "Bitcoin"],
@@ -13,7 +14,7 @@ const COIN_IDS = [
 
 export async function fetchMarkets() {
   const ids = COIN_IDS.map(([id]) => id).join(",");
-  const response = await fetch(
+  const response = await doFetch(
     `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1`,
     { headers: { accept: "application/json" } },
   );
@@ -40,7 +41,7 @@ export async function fetchWallet(address: string) {
   if (!key) {
     return GetWalletResponse.parse({ address, solBalance: 0, tokenCount: 0, tokens: [], error: "HELIUS_API_KEY is not configured on the server." });
   }
-  const response = await fetch(`https://mainnet.helius-rpc.com/?api-key=${key}`, {
+  const response = await doFetch(`https://mainnet.helius-rpc.com/?api-key=${key}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({

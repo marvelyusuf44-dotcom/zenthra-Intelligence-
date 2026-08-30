@@ -21,6 +21,7 @@ import { Router, type IRouter } from "express";
 import { runChat, type ChatHistoryItem } from "../lib/ai/chat-engine";
 import { checkAndConsumeQuota, QuotaExceededError } from "../lib/billing/quota";
 import { insertRow, listRows } from "../services/supabase";
+import { doFetch } from "../lib/http";
 
 const router: IRouter = Router();
 
@@ -60,7 +61,7 @@ function requireWaCredentials() {
 
 async function sendWhatsAppText(to: string, body: string) {
   const { token, phoneNumberId } = requireWaCredentials();
-  const res = await fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`, {
+  const res = await doFetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -89,7 +90,7 @@ async function uploadWhatsAppMedia(base64Webp: string): Promise<string> {
   form.append("messaging_product", "whatsapp");
   form.append("file", new Blob([bytes], { type: "image/webp" }), "sticker.webp");
 
-  const res = await fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/media`, {
+  const res = await doFetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/media`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: form,
@@ -107,7 +108,7 @@ async function sendWhatsAppSticker(to: string, base64Webp: string) {
   const { token, phoneNumberId } = requireWaCredentials();
   const mediaId = await uploadWhatsAppMedia(base64Webp);
 
-  const res = await fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`, {
+  const res = await doFetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ messaging_product: "whatsapp", to, type: "sticker", sticker: { id: mediaId } }),
