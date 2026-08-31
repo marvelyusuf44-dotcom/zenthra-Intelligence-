@@ -165,7 +165,7 @@
         <a href="#contact">Kontak</a>
       </div>
       <div class="navcta">
-        <a href="#whatsapp" class="btn btn-ghost">Masuk / Daftar</a>
+        <a href="/app" class="btn btn-ghost">Masuk / Daftar</a>
         <a id="nav-wa-cta" href="#" target="_blank" rel="noopener" class="btn btn-primary">Chat with Zenthra</a>
       </div>
     </nav>
@@ -391,16 +391,14 @@
   // Nomor WhatsApp Business RESMI Zenthra, format internasional TANPA "+" atau spasi.
   // Ini BUKAN phone_number_id dari Meta — ini nomor telepon aslinya.
   const ZENTHRA_WA_NUMBER = "6281234567890"; // TODO: ganti ke nomor asli
-  // Base URL API server (Railway) — sama seperti VITE_API_BASE_URL di web app.
-  const API_BASE = "https://your-api.up.railway.app"; // TODO: ganti ke URL Railway asli
-  // URL dashboard/web app (Vercel project artifacts/zenthra) — domain TERPISAH
-  // dari landing page ini. Contoh: https://app.zenthra.id
-  const APP_URL = "https://app.your-domain.example"; // TODO: ganti ke domain dashboard asli
+  // Base URL API — SEKARANG SAME-ORIGIN (project digabung: landing + dashboard
+  // + API dalam satu domain), jadi default kosong (relatif) udah cukup. Cuma
+  // perlu diisi kalau suatu saat landing di-deploy TERPISAH lagi dari API-nya.
+  const API_BASE = "";
   // ======================================================
-
-  document.querySelectorAll('a[href^="/app/"]').forEach((a) => {
-    a.setAttribute("href", APP_URL + a.getAttribute("href").replace(/^\/app/, ""));
-  });
+  // Link ke dashboard (href="/app/...") di HTML udah relatif & same-origin,
+  // gak perlu di-rewrite apa-apa lagi — beda dari sebelumnya waktu landing &
+  // dashboard masih 2 domain terpisah.
 
   const waLink = `https://wa.me/${ZENTHRA_WA_NUMBER}?text=${encodeURIComponent("Halo Zenthra!")}`;
   ["nav-wa-cta", "hero-wa-cta", "wa-card-cta"].forEach((id) => {
@@ -471,18 +469,18 @@
             <li>On-chain lookup ${fmt(p.quotas.onchain)}</li>
             <li>Creative tools ${fmt(p.quotas.creative)}</li>
           </ul>
-          <a href="${APP_URL}/pricing" class="btn ${p.id === "free" ? "btn-ghost" : "btn-primary"}">${p.id === "free" ? "Mulai gratis" : "Pilih tier"}</a>
+          <a href="/app/pricing" class="btn ${p.id === "free" ? "btn-ghost" : "btn-primary"}">${p.id === "free" ? "Mulai gratis" : "Pilih tier"}</a>
         </div>`;
       })
       .join("");
   }
   renderPlans(FALLBACK_PLANS);
-  if (API_BASE && !API_BASE.includes("your-api")) {
-    fetch(`${API_BASE}/api/billing/plans`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(renderPlans)
-      .catch(() => {}); // fallback statis udah kerender, diemin aja kalau fetch gagal
-  }
+  // Same-origin sekarang (project digabung) — selalu coba fetch data live,
+  // fallback ke data statis kalau request-nya gagal.
+  fetch(`${API_BASE}/api/billing/plans`)
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then(renderPlans)
+    .catch(() => {}); // fallback statis udah kerender, diemin aja kalau fetch gagal
 </script>
 </body>
 </html>
