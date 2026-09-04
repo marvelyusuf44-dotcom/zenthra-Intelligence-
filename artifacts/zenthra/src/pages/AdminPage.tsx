@@ -12,29 +12,27 @@ interface Claim {
 export default function AdminPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(false);
-  const [adminSecret, setAdminSecret] = useState(() => localStorage.getItem("zenthra_admin_secret") || "");
+  const [adminSecret, setAdminSecret] = useState(() => 
+    localStorage.getItem("zenthra_admin_secret") || ""
+  );
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchClaims = async () => {
     if (!adminSecret) {
-      alert("Masukkan Admin Secret Key terlebih dahulu.");
+      alert("Masukkan Admin Secret terlebih dahulu");
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/billing/admin/claims?status=pending", {
+      localStorage.setItem("zenthra_admin_secret", adminSecret);
+      const res = await fetch("/api/admin/claims", {
         headers: { "x-admin-secret": adminSecret },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setClaims(data);
-        localStorage.setItem("zenthra_admin_secret", adminSecret);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert("Gagal: " + (err.error || "Secret key salah atau error server"));
-      }
-    } catch (err) {
-      alert("Terjadi kesalahan koneksi.");
+      if (!res.ok) throw new Error("Gagal memuat data (Secret salah?)");
+      const data = await res.json();
+      setClaims(data);
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -46,168 +44,117 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleConfirm = async (claimId: string) => {
-    setActionLoading(claimId);
+  const handleAction = async (id: string, action: "approve" | "reject") => {
+    setActionLoading(id);
     try {
-      const res = await fetch("/api/billing/admin/confirm-payment", {
+      const res = await fetch(`/api/admin/claims/${id}/${action}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": adminSecret,
-        },
-        body: JSON.stringify({ claimId }),
+        headers: { "x-admin-secret": adminSecret },
       });
-
-      if (res.ok) {
-        alert("Pembayaran berhasil di-approve! Tier langganan user aktif.");
-        fetchClaims();
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert("Gagal approve: " + (err.error || "Terjadi kesalahan"));
-      }
-    } catch (err) {
-      alert("Terjadi kesalahan jaringan.");
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleReject = async (claimId: string) => {
-    if (!confirm("Yakin ingin menolak klaim ini?")) return;
-    setActionLoading(claimId);
-    try {
-      const res = await fetch("/api/billing/admin/reject-payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": adminSecret,
-        },
-        body: JSON.stringify({ claimId }),
-      });
-
-      if (res.ok) {
-        alert("Klaim pembayaran ditolak.");
-        fetchClaims();
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert("Gagal menolak: " + (err.error || "Terjadi kesalahan"));
-      }
-    } catch (err) {
-      alert("Terjadi kesalahan jaringan.");
+      if (!res.ok) throw new Error(`Gagal memproses ${action}`);
+      alert(`Berhasil ${action} klaim!`);
+      fetchClaims();
+    } catch (err: any) {
+      alert(err.message);
     } finally {
       setActionLoading(null);
     }
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto", color: "#fff", fontFamily: "sans-serif" }}>
-      <h2 style={{ borderBottom: "1px solid #333", paddingBottom: "10px" }}>Zenthra Admin Approval</h2>
+    <div style={{ padding: "24px", maxWidth: "800px", margin: "0 auto", color: "#fff" }}>
+      <h1 style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "16px" }}>
+        Admin Dashboard - QRIS Approvals
+      </h1>
 
-      <div style={{ marginBottom: "20px", background: "#1a1a1a", padding: "15px", borderRadius: "8px" }}>
-        <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "#aaa" }}>
-          Admin API Secret:
-        </label>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <input
-            type="password"
-            value={adminSecret}
-            onChange={(e) => setAdminSecret(e.target.value)}
-            placeholder="Masukkan ADMIN_API_SECRET"
-            style={{
-              flex: 1,
-              padding: "10px",
-              borderRadius: "4px",
-              border: "1px solid #444",
-              background: "#222",
-              color: "#fff",
-            }}
-          />
-          <button
-            onClick={fetchClaims}
-            style={{
-              padding: "10px 16px",
-              background: "#00e5ff",
-              color: "#000",
-              fontWeight: "bold",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Muat
-          </button>
-        </div>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+        <input
+          type="password"
+          placeholder="Masukkan Admin Secret"
+          value={adminSecret}
+          onChange={(e) => setAdminSecret(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "10px",
+            background: "#1a1a1a",
+            border: "1px solid #444",
+            color: "#fff",
+            borderRadius: "6px"
+          }}
+        />
+        <button
+          onClick={fetchClaims}
+          style={{
+            padding: "10px 20px",
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          {loading ? "Memuat..." : "Muat"}
+        </button>
       </div>
 
-      {loading ? (
-        <p style={{ textAlign: "center", color: "#aaa" }}>Memuat antrian pembayaran...</p>
-      ) : claims.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#666", marginTop: "30px" }}>Tidak ada klaim pembayaran pending.</p>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          {claims.map((claim) => (
+      <div>
+        <h2 style={{ fontSize: "18px", marginBottom: "12px" }}>Daftar Klaim Pending</h2>
+        {claims.length === 0 ? (
+          <p style={{ color: "#aaa" }}>Tidak ada klaim pending atau belum dimuat.</p>
+        ) : (
+          claims.map((c) => (
             <div
-              key={claim.id}
+              key={c.id}
               style={{
-                padding: "15px",
-                border: "1px solid #333",
+                background: "#1f2937",
+                padding: "16px",
                 borderRadius: "8px",
-                background: "#111",
+                marginBottom: "12px",
+                border: "1px solid #374151"
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                <span style={{ fontWeight: "bold", color: "#00e5ff", textTransform: "uppercase" }}>
-                  Tier: {claim.tier}
-                </span>
-                <span style={{ fontSize: "12px", color: "#888" }}>
-                  {new Date(claim.created_at).toLocaleString("id-ID")}
-                </span>
-              </div>
+              <p><strong>ID:</strong> {c.id}</p>
+              <p><strong>User ID:</strong> {c.user_id}</p>
+              <p><strong>Tier:</strong> {c.tier}</p>
+              <p><strong>Note:</strong> {c.note || "-"}</p>
+              <p><strong>Status:</strong> {c.status}</p>
+              <p><strong>Waktu:</strong> {new Date(c.created_at).toLocaleString()}</p>
 
-              <p style={{ margin: "5px 0", fontSize: "14px", color: "#ccc" }}>
-                <strong>User ID:</strong> <code style={{ background: "#222", padding: "2px 4px", borderRadius: "3px" }}>{claim.user_id}</code>
-              </p>
-              <p style={{ margin: "5px 0", fontSize: "14px", color: "#ccc" }}>
-                <strong>Catatan Jam Bayar:</strong> {claim.note || "-"}
-              </p>
-
-              <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
                 <button
-                  onClick={() => handleConfirm(claim.id)}
-                  disabled={actionLoading === claim.id}
+                  onClick={() => handleAction(c.id, "approve")}
+                  disabled={actionLoading === c.id}
                   style={{
-                    flex: 1,
-                    padding: "10px",
-                    background: "#00c853",
+                    padding: "8px 16px",
+                    background: "#16a34a",
                     color: "#fff",
                     border: "none",
                     borderRadius: "4px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
+                    cursor: "pointer"
                   }}
                 >
-                  {actionLoading === claim.id ? "Proses..." : "Approve"}
+                  {actionLoading === c.id ? "Proses..." : "Approve"}
                 </button>
-
                 <button
-                  onClick={() => handleReject(claim.id)}
-                  disabled={actionLoading === claim.id}
+                  onClick={() => handleAction(c.id, "reject")}
+                  disabled={actionLoading === c.id}
                   style={{
-                    padding: "10px 16px",
-                    background: "#d50000",
+                    padding: "8px 16px",
+                    background: "#dc2626",
                     color: "#fff",
                     border: "none",
                     borderRadius: "4px",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
-                  Tolak
+                  {actionLoading === c.id ? "Proses..." : "Reject"}
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
