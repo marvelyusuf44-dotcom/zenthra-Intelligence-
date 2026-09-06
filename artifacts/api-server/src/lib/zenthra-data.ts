@@ -50,7 +50,12 @@ export async function fetchWallet(address: string) {
     }),
   });
   if (!response.ok) throw new Error(`Helius request failed (${response.status})`);
-  const payload = await response.json() as { result?: { nativeBalance?: { lamports?: number }; items?: Array<Record<string, any>> }; error?: { message?: string } };
+  interface HeliusAssetItem {
+    interface?: string;
+    token_info?: { decimals?: number; balance?: number; symbol?: string };
+    content?: { metadata?: { name?: string } };
+  }
+  const payload = await response.json() as { result?: { nativeBalance?: { lamports?: number }; items?: Array<HeliusAssetItem> }; error?: { message?: string } };
   if (payload.error) return GetWalletResponse.parse({ address, solBalance: 0, tokenCount: 0, tokens: [], error: payload.error.message ?? "Helius returned an error" });
   const result = payload.result ?? {};
   const tokens = (result.items ?? [])

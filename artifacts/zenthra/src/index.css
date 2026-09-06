@@ -67,7 +67,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Zenthra — obsidian telemetry with aurora cyan and signal mint */
+/* Zenthra — deep black + Zenthra Blue, an on-chain intelligence workspace (see Master Blueprint for the palette) */
 :root {
   --button-outline: rgba(0, 0, 0, 0.1);
   --badge-outline: rgba(0, 0, 0, 0.05);
@@ -79,40 +79,40 @@
   --elevate-1: rgba(0, 0, 0, 0.03);
   --elevate-2: rgba(0, 0, 0, 0.08);
 
-  --background: 228 38% 7%;
-  --foreground: 216 25% 92%;
-  --border: 222 27% 16%;
-  --card: 226 34% 10%;
-  --card-foreground: 216 25% 92%;
-  --card-border: 222 27% 17%;
-  --sidebar: 229 39% 8%;
-  --sidebar-foreground: 216 20% 78%;
-  --sidebar-border: 222 27% 15%;
-  --sidebar-primary: 187 88% 58%;
-  --sidebar-primary-foreground: 229 39% 8%;
-  --sidebar-accent: 223 31% 14%;
-  --sidebar-accent-foreground: 216 25% 92%;
-  --sidebar-ring: 187 88% 58%;
-  --popover: 226 34% 11%;
-  --popover-foreground: 216 25% 92%;
-  --popover-border: 222 27% 19%;
-  --primary: 187 88% 58%;
-  --primary-foreground: 229 39% 8%;
-  --secondary: 224 30% 15%;
-  --secondary-foreground: 216 25% 92%;
-  --muted: 224 25% 13%;
-  --muted-foreground: 218 16% 53%;
-  --accent: 217 91% 60%;
-  --accent-foreground: 229 39% 8%;
+  --background: 216 33% 3%;           /* Deep Black #05070A */
+  --foreground: 216 33% 97%;          /* White #F5F7FA */
+  --border: 215 21% 16%;              /* Border #202731 */
+  --card: 215 26% 9%;                 /* Dark Surface #11161D */
+  --card-foreground: 216 33% 97%;
+  --card-border: 215 21% 16%;
+  --sidebar: 215 26% 9%;
+  --sidebar-foreground: 215 18% 78%;
+  --sidebar-border: 215 21% 16%;
+  --sidebar-primary: 221 83% 53%;     /* Zenthra Blue #2563EB */
+  --sidebar-primary-foreground: 216 33% 97%;
+  --sidebar-accent: 215 24% 13%;
+  --sidebar-accent-foreground: 216 33% 97%;
+  --sidebar-ring: 221 83% 53%;
+  --popover: 215 26% 10%;
+  --popover-foreground: 216 33% 97%;
+  --popover-border: 215 21% 18%;
+  --primary: 221 83% 53%;             /* Zenthra Blue #2563EB */
+  --primary-foreground: 216 33% 97%;
+  --secondary: 215 24% 14%;
+  --secondary-foreground: 216 33% 97%;
+  --muted: 215 22% 12%;
+  --muted-foreground: 215 12% 59%;    /* Muted Text #8B95A3 */
+  --accent: 217 91% 60%;              /* Bright Blue #3B82F6 — already on-brand, unchanged */
+  --accent-foreground: 216 33% 3%;
   --destructive: 350 78% 62%;
   --destructive-foreground: 216 25% 94%;
-  --input: 222 27% 20%;
-  --ring: 187 88% 58%;
-  --chart-1: 187 88% 58%;
-  --chart-2: 217 91% 60%;
-  --chart-3: 38 92% 62%;
-  --chart-4: 350 78% 62%;
-  --chart-5: 262 70% 66%;
+  --input: 215 21% 19%;
+  --ring: 221 83% 53%;
+  --chart-1: 221 83% 53%;             /* was cyan (187 88% 58%) — now Zenthra Blue */
+  --chart-2: 217 91% 60%;             /* Bright Blue — unchanged */
+  --chart-3: 38 92% 62%;              /* amber — semantic (warnings), not brand identity, unchanged */
+  --chart-4: 350 78% 62%;             /* rose — semantic (losses/errors), unchanged */
+  --chart-5: 262 70% 66%;             /* purple — data-viz differentiator only, unchanged */
   --app-font-sans: 'Outfit', sans-serif;
   --app-font-serif: 'Space Grotesk', sans-serif;
   --app-font-mono: 'DM Mono', monospace;
@@ -200,17 +200,17 @@
   --elevate-1: rgba(255, 255, 255, 0.04);
   --elevate-2: rgba(255, 255, 255, 0.09);
 
-  --background: 228 38% 7%; --foreground: 216 25% 92%; --border: 222 27% 16%;
-  --card: 226 34% 10%; --card-foreground: 216 25% 92%; --card-border: 222 27% 17%;
-  --sidebar: 229 39% 8%; --sidebar-foreground: 216 20% 78%; --sidebar-border: 222 27% 15%;
-  --sidebar-primary: 187 88% 58%; --sidebar-primary-foreground: 229 39% 8%;
-  --sidebar-accent: 223 31% 14%; --sidebar-accent-foreground: 216 25% 92%; --sidebar-ring: 187 88% 58%;
-  --popover: 226 34% 11%; --popover-foreground: 216 25% 92%; --popover-border: 222 27% 19%;
-  --primary: 187 88% 58%; --primary-foreground: 229 39% 8%; --secondary: 224 30% 15%;
-  --secondary-foreground: 216 25% 92%; --muted: 224 25% 13%; --muted-foreground: 218 16% 53%;
-  --accent: 217 91% 60%; --accent-foreground: 229 39% 8%; --destructive: 350 78% 62%;
-  --destructive-foreground: 216 25% 94%; --input: 222 27% 20%; --ring: 187 88% 58%;
-  --chart-1: 187 88% 58%; --chart-2: 217 91% 60%; --chart-3: 38 92% 62%; --chart-4: 350 78% 62%; --chart-5: 262 70% 66%;
+  --background: 216 33% 3%; --foreground: 216 33% 97%; --border: 215 21% 16%;
+  --card: 215 26% 9%; --card-foreground: 216 33% 97%; --card-border: 215 21% 16%;
+  --sidebar: 215 26% 9%; --sidebar-foreground: 215 18% 78%; --sidebar-border: 215 21% 16%;
+  --sidebar-primary: 221 83% 53%; --sidebar-primary-foreground: 216 33% 97%;
+  --sidebar-accent: 215 24% 13%; --sidebar-accent-foreground: 216 33% 97%; --sidebar-ring: 221 83% 53%;
+  --popover: 215 26% 10%; --popover-foreground: 216 33% 97%; --popover-border: 215 21% 18%;
+  --primary: 221 83% 53%; --primary-foreground: 216 33% 97%; --secondary: 215 24% 14%;
+  --secondary-foreground: 216 33% 97%; --muted: 215 22% 12%; --muted-foreground: 215 12% 59%;
+  --accent: 217 91% 60%; --accent-foreground: 216 33% 3%; --destructive: 350 78% 62%;
+  --destructive-foreground: 216 25% 94%; --input: 215 21% 19%; --ring: 221 83% 53%;
+  --chart-1: 221 83% 53%; --chart-2: 217 91% 60%; --chart-3: 38 92% 62%; --chart-4: 350 78% 62%; --chart-5: 262 70% 66%;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
@@ -247,7 +247,7 @@
   .font-display { font-family: var(--app-font-serif); }
   .font-data { font-family: var(--app-font-mono); }
   .panel { background: hsl(var(--card) / 0.72); border: 1px solid hsl(var(--border)); }
-  .signal-grid { background-image: linear-gradient(hsl(222 27% 18% / .24) 1px, transparent 1px), linear-gradient(90deg, hsl(222 27% 18% / .24) 1px, transparent 1px); background-size: 32px 32px; }
+  .signal-grid { background-image: linear-gradient(hsl(215 21% 18% / .24) 1px, transparent 1px), linear-gradient(90deg, hsl(215 21% 18% / .24) 1px, transparent 1px); background-size: 32px 32px; }
 }
 
 @keyframes zenthra-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

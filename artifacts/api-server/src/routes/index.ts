@@ -6,6 +6,7 @@ import productRouter from "./product";
 import whatsappRouter from "./whatsapp";
 import whatsappConnectRouter from "./whatsapp-connect";
 import billingRouter from "./billing";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(productRouter);
 router.use(whatsappRouter);
 router.use(whatsappConnectRouter);
 router.use(billingRouter);
+router.use(adminRouter);
 
 export default router;

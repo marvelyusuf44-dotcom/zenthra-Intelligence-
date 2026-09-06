@@ -13,7 +13,13 @@
 
 import { fetchMarkets, fetchWallet } from "../zenthra-data";
 import { computeSignal, computeWatchlistSignals } from "../live-signals";
-import { downloadFromUrl, enhanceImage, makeSticker } from "./media";
+
+// make_sticker / download_from_url / enhance_image used to live here.
+// Removed from the agent's tool registry — Zenthra's identity is an
+// on-chain research agent, not a generic sticker/download assistant (see
+// the Master Blueprint, "Zenthra is NOT... a sticker/image tool"). The
+// underlying code is left in place at ./media.ts in case it's ever useful
+// for a different surface later; it's just no longer offered to the LLM.
 
 export const TOOLS = [
   {
@@ -66,64 +72,41 @@ export const TOOLS = [
       required: ["accountSize", "entry", "stopLoss"],
     },
   },
-  {
-    type: "function",
-    name: "make_sticker",
-    description: "Convert an image into a WhatsApp-ready sticker (square WebP, under 100KB). Provide the image URL the user shared.",
-    parameters: {
-      type: "object",
-      properties: {
-        imageUrl: { type: "string", description: "URL of the source image to convert into a sticker." },
-      },
-      required: ["imageUrl"],
-    },
-  },
-  {
-    type: "function",
-    name: "download_from_url",
-    description:
-      "Download a direct file link (image, PDF, document). Does NOT work for social media video links (YouTube/Instagram/TikTok) — those are refused because it violates the platform's Terms of Service.",
-    parameters: {
-      type: "object",
-      properties: {
-        url: { type: "string", description: "Direct URL to the file." },
-      },
-      required: ["url"],
-    },
-  },
-  {
-    type: "function",
-    name: "enhance_image",
-    description: "Upscale/enhance an image to higher resolution. Currently unavailable — will return a clear configuration error until an upscaling provider is connected.",
-    parameters: {
-      type: "object",
-      properties: {
-        imageUrl: { type: "string", description: "URL of the source image to enhance." },
-      },
-      required: ["imageUrl"],
-    },
-  },
 ] as const;
 
-export async function executeTool(name: string, args: any): Promise<unknown> {
+// Mirrors the `parameters` JSON schemas declared on TOOLS above — every
+// field optional here since which ones are actually required depends on
+// which tool is being called (asserted per-case below where a tool's own
+// schema guarantees a field is present).
+interface ToolArgs {
+  symbol?: string;
+  address?: string;
+  accountSize?: number;
+  entry?: number;
+  stopLoss?: number;
+  riskPercent?: number;
+}
+
+export async function executeTool(name: string, args: unknown): Promise<unknown> {
+  const a = (args ?? {}) as ToolArgs;
   switch (name) {
     case "get_market_data": {
       const all = await fetchMarkets();
-      if (!args?.symbol) return all;
-      const found = all.find((m) => m.symbol.toUpperCase() === String(args.symbol).toUpperCase());
-      return found ?? { error: `No market data for "${args.symbol}"` };
+      if (!a.symbol) return all;
+      const found = all.find((m) => m.symbol.toUpperCase() === String(a.symbol).toUpperCase());
+      return found ?? { error: `No market data for "${a.symbol}"` };
     }
     case "get_signals": {
-      if (args?.symbol) {
-        const signal = await computeSignal(args.symbol);
-        return signal ?? { error: `No candle data available for "${args.symbol}"` };
+      if (a.symbol) {
+        const signal = await computeSignal(a.symbol);
+        return signal ?? { error: `No candle data available for "${a.symbol}"` };
       }
       return await computeWatchlistSignals();
     }
     case "get_wallet_analysis":
-      return await fetchWallet(args.address);
+      return await fetchWallet(a.address as string);
     case "check_risk": {
-      const { accountSize, entry, stopLoss, riskPercent = 1.5 } = args;
+      const { accountSize, entry, stopLoss, riskPercent = 1.5 } = a as { accountSize: number; entry: number; stopLoss: number; riskPercent?: number };
       const riskAmount = accountSize * (riskPercent / 100);
       const perUnitRisk = Math.abs(entry - stopLoss);
       if (!perUnitRisk) return { error: "Entry and stop-loss can't be equal." };
@@ -138,30 +121,6 @@ export async function executeTool(name: string, args: any): Promise<unknown> {
         suggestedPositionValueUsd: Number(positionValue.toFixed(2)),
         flags,
       };
-    }
-    case "make_sticker": {
-      try {
-        const result = await makeSticker({ url: args?.imageUrl });
-        return { ok: true, sizeBytes: result.sizeBytes, base64Webp: result.base64Webp };
-      } catch (error) {
-        return { error: error instanceof Error ? error.message : "Gagal membuat stiker." };
-      }
-    }
-    case "download_from_url": {
-      try {
-        const result = await downloadFromUrl(args?.url);
-        return { ok: true, contentType: result.contentType, sizeBytes: result.sizeBytes, base64: result.base64 };
-      } catch (error) {
-        return { error: error instanceof Error ? error.message : "Gagal mengunduh file." };
-      }
-    }
-    case "enhance_image": {
-      try {
-        await enhanceImage({ url: args?.imageUrl });
-        return { error: "unreachable" }; // enhanceImage selalu throw — lihat lib/tools/media.ts
-      } catch (error) {
-        return { error: error instanceof Error ? error.message : "Image enhancement belum tersedia." };
-      }
     }
     default:
       return { error: `Unknown tool: ${name}` };

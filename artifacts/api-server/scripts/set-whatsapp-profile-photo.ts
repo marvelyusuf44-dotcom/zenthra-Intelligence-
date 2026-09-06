@@ -5,11 +5,11 @@
 // WA nggak punya cara ganti foto profil selain lewat app WhatsApp itu sendiri
 // ATAU API resmi ini).
 //
-// CARA PAKAI (jalanin SEKALI setelah API server live & env var udah di-set di Railway):
+// CARA PAKAI (jalanin SEKALI setelah API server live & env var udah di-set di Vercel):
 //   cd artifacts/api-server
 //   pnpm exec tsx scripts/set-whatsapp-profile-photo.ts scripts/assets/zenthra-wa-avatar.png
 //
-// Butuh env (ambil dari Railway/​.env kamu):
+// Butuh env (ambil dari Vercel/.env kamu):
 //   META_APP_ID, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID
 //
 // Alur resmi Meta (Resumable Upload API), 3 langkah:

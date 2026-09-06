@@ -1,6 +1,6 @@
-# Zenthra Crypto Intelligence
+# Zenthra — AI Agent for On-Chain Intelligence
 
-Zenthra is a crypto intelligence workspace for live market context, Solana wallet analysis, on-chain signals, and AI-assisted research.
+Ask a question. Zenthra does the research. An AI agent that investigates the on-chain and market world — wallets, tokens, futures — and shows its evidence, backed by a shared research engine (web + WhatsApp) and a deterministic Confluence Score for futures reads.
 
 ## Run & Operate
 
@@ -26,17 +26,21 @@ Zenthra is a crypto intelligence workspace for live market context, Solana walle
 - `artifacts/zenthra/src/index.css` — Zenthra visual language and motion
 - `artifacts/api-server/src/routes/zenthra.ts` — market, signal, wallet, and AI chat endpoints
 - `artifacts/api-server/src/lib/zenthra-data.ts` — CoinGecko/Helius adapters and signal data
-- `lib/api-spec/openapi.yaml` — source of truth for generated API hooks and schemas
+- `artifacts/api-server/src/lib/scoring/confluence.ts` — the Futures Intelligence Confluence Score (weighted categories, honest about which ones have real data connected)
+- `artifacts/api-server/src/routes/admin.ts` — internal control-center endpoints (users, usage, data-source status), all `requireAdmin`-gated
+- `artifacts/landing/index.html` — public landing page (static, no build step)
+- `lib/api-spec/openapi.yaml` — source of truth for generated API hooks and schemas (note: `/signals`'s Confluence Score fields and a few newer endpoints — `/watchlist`, `/alerts`, `/token/:symbol`, `/admin/*` — predate this spec and aren't in it yet; the frontend calls them directly via `customFetch`)
 
 ## Architecture decisions
 
-- The web artifact stays separate from the shared API server; `/api` is routed through the workspace proxy.
-- CoinGecko is used for public market snapshots, while Helius is optional and reports a clear configuration error when unavailable.
-- AI chat uses the user-provided Gemini secret and has a concise local fallback so the interface remains usable if the AI request fails.
+- The web artifact stays separate from the shared API server; `/api` is routed through the workspace proxy in dev, and through one combined Vercel deployment in production (root `vercel.json` — see `DEPLOY.md`).
+- CoinGecko and Binance are used for public market/futures data (no key required), while Helius is optional and reports a clear configuration error when unavailable.
+- AI chat uses the user-provided Gemini secret and has an honest "temporarily unavailable" fallback (never a scripted fake answer) if the AI request fails.
+- The Confluence Score computes Market Structure and Momentum+Volume from the existing technical/SMC engine, and Open Interest/Funding from real Binance data — Liquidations, On-chain, and Market/News Context are intentionally left `available: false` until a real source is connected, rather than estimated.
 
 ## Product
 
-Zenthra includes a responsive analyst workspace with market overview, token and exchange screens, on-chain activity, wallet analysis, transfer and transaction views, entity and smart-money tracking, signal desk, watchlist, alerts, wallet connection, API docs, account, theme settings, and an AI analyst chat.
+Zenthra centers on an AI Research workspace (`/ai`) backed by a real agent loop, plus Discover (guided research prompts), Futures Intelligence (Confluence Score research per pair) and a compact Signals desk, Markets/Token detail, Wallet/Entities/Smart Money intelligence, and Monitor (a merged watchlist + alerts surface). WhatsApp and the old sticker/download/enhance-image tools are no longer part of the public product identity — WhatsApp remains as backend infrastructure for a possible future notification channel; the underlying tool code for the rest is left in place but no longer registered with the agent. Admin is a separate, unlinked `/admin` control center, key-gated (in-memory only, never persisted to the browser).
 
 ## User preferences
 

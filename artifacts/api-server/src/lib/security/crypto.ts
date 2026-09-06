@@ -6,7 +6,7 @@
 //
 // KENAPA application-level, bukan fitur enkripsi Supabase (pgsodium)?
 // Portable — jalan sama persis di Supabase tier mana pun tanpa perlu aktifin
-// extension khusus, dan kunci enkripsi dipegang server (Railway env), bukan
+// extension khusus, dan kunci enkripsi dipegang server (Vercel env), bukan
 // di sisi database sama sekali.
 
 import { randomBytes, createCipheriv, createDecipheriv, createHash } from "node:crypto";

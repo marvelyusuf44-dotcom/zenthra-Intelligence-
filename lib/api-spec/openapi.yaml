@@ -111,19 +111,36 @@ components:
         change24h: { type: number }
         volume24h: { type: number }
         marketCap: { type: number }
+    ConfluenceCategory:
+      type: object
+      required: [key, label, weight, raw, available, note]
+      properties:
+        key: { type: string }
+        label: { type: string }
+        weight: { type: number }
+        raw: { type: number }
+        available: { type: boolean }
+        note: { type: string }
     Signal:
       type: object
-      required: [pair, direction, score, entry, stopLoss, takeProfit, timeframe]
+      required: [pair, direction, call, tier, tierLabel, score, price, entry, stopLoss, takeProfit, takeProfit2, timeframe, reasoning, confluence]
       properties:
         pair: { type: string }
-        direction: { type: string, enum: [LONG, SHORT, HOLD] }
-        score: { type: number }
-        entry: { type: number }
-        stopLoss: { type: number }
-        takeProfit: { type: number }
+        direction: { type: string, enum: [LONG, SHORT, HOLD], description: "Raw technical/SMC direction from the engine, independent of the confluence tier." }
+        call: { type: string, enum: [LONG, SHORT, WATCH, NO_TRADE], description: "The Blueprint's final call — LONG/SHORT only at Strong/Valid Setup tiers, otherwise WATCH or NO_TRADE." }
+        tier: { type: string, enum: [strong_setup, valid_setup, watch, no_trade] }
+        tierLabel: { type: string, enum: ["Strong Setup", "Valid Setup", "Watch", "No Trade"] }
+        score: { type: number, description: "0-100 Confluence Score — sum of the weighted categories in `confluence`." }
+        price: { type: number }
+        entry: { type: ["number", "null"] }
+        stopLoss: { type: ["number", "null"] }
+        takeProfit: { type: ["number", "null"] }
         takeProfit2: { type: ["number", "null"] }
         timeframe: { type: string }
-        reasoning: { type: ["string", "null"] }
+        reasoning: { type: string }
+        confluence:
+          type: array
+          items: { $ref: "#/components/schemas/ConfluenceCategory" }
     WalletToken:
       type: object
       required: [name, symbol]

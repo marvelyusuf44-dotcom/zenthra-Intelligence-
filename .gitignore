@@ -48,6 +48,18 @@ Thumbs.db
 .cache/
 .local/
 
-# WhatsApp session credentials
+# WhatsApp session credentials — defense in depth: both the directory names
+# AND the credential filename itself, at any depth, so a differently-named
+# session folder can't slip a creds file back into a commit.
 auth/
 auth-backup/
+**/creds.json
+**/creds-*.json
+
+# Local reference/scratch files pulled in during a Replit chat session —
+# never part of the actual build graph, shouldn't ship or get committed.
+/attached_assets/
+
+# Stray full-repo snapshot zips (e.g. manual backups) — these bloat the repo
+# and can silently carry an old copy of anything above, including secrets.
+/*.zip

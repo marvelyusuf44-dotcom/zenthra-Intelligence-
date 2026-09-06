@@ -37,9 +37,6 @@ export interface RunChatResult {
 const TOOL_QUOTA_CATEGORY: Record<string, "onchain" | "creative" | undefined> = {
   get_wallet_analysis: "onchain",
   get_signals: "onchain",
-  make_sticker: "creative",
-  download_from_url: "creative",
-  enhance_image: "creative",
 };
 
 export interface RunChatOptions {
@@ -51,6 +48,20 @@ export interface RunChatOptions {
    * apa pun soal siapa usernya — itu urusan channel (routes/*.ts) yang nyediain callback-nya.
    */
   onToolUsed?: (category: "onchain" | "creative") => Promise<void>;
+}
+
+// Struktur step "function_call" dari ai.interactions.create() — didefinisikan
+// lokal (bukan diimpor dari SDK) karena yang kita pakai cuma 4 field ini;
+// parameter guard-nya sengaja `unknown`, jadi valid dipakai di .some()/.filter()
+// gimana pun persisnya tipe `interaction.steps` didefinisikan SDK-nya.
+interface FunctionCallStep {
+  type: "function_call";
+  name: string;
+  id: string;
+  arguments: unknown;
+}
+function isFunctionCallStep(step: unknown): step is FunctionCallStep {
+  return typeof step === "object" && step !== null && (step as { type?: unknown }).type === "function_call";
 }
 
 /**
@@ -94,10 +105,10 @@ export async function runChat(
     });
 
     let guard = 0;
-    while (interaction.steps.some((s: any) => s.type === "function_call") && guard < 4) {
-      const calls = interaction.steps.filter((s: any) => s.type === "function_call");
+    while (interaction.steps.some(isFunctionCallStep) && guard < 4) {
+      const calls = interaction.steps.filter(isFunctionCallStep);
       const results = await Promise.all(
-        calls.map(async (fc: any) => {
+        calls.map(async (fc) => {
           const category = TOOL_QUOTA_CATEGORY[fc.name];
           if (category && options.onToolUsed) {
             try {
@@ -120,13 +131,11 @@ export async function runChat(
             }
           }
 
-          const toolResult: any = await executeTool(fc.name, fc.arguments);
-          if (fc.name === "make_sticker" && toolResult?.ok && toolResult?.base64Webp) {
-            media.push({ type: "sticker", base64Webp: toolResult.base64Webp });
-          }
+          const toolResult = await executeTool(fc.name, fc.arguments);
           // Jangan kirim payload base64 (bisa ratusan KB) balik ke model — cukup
           // metadata-nya, biar konteks tetap ringkas dan nggak boros token.
-          const { base64Webp, base64, ...metadataOnly } = toolResult ?? {};
+          const resultRecord: Record<string, unknown> = toolResult && typeof toolResult === "object" ? (toolResult as Record<string, unknown>) : {};
+          const { base64Webp: _base64Webp, base64: _base64, ...metadataOnly } = resultRecord;
           return {
             type: "function_result" as const,
             name: fc.name,

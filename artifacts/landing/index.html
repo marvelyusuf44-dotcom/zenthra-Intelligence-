@@ -1,17 +1,22 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zenthra — Your AI Assistant, right inside WhatsApp</title>
-<meta name="description" content="AI for everyday life. Intelligence for the on-chain world. Chat, brainstorm, riset, dan analisa wallet/token real-time — langsung di WhatsApp." />
+<title>Zenthra — AI Agent for On-Chain Intelligence</title>
+<meta name="description" content="Ask a question. Zenthra does the research. An AI agent for on-chain intelligence — wallet, token, and futures research with evidence, not guesses." />
+<meta property="og:title" content="Zenthra — AI Agent for On-Chain Intelligence" />
+<meta property="og:description" content="Ask a question. Zenthra does the research." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#05070A" />
+<link rel="icon" type="image/png" href="/zenthra-logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#0b0e19; --card:#111522; --border:#1e2434; --fg:#e6eaf0;
-    --muted:#8a93a6; --muted-2:#5b6376; --cyan:#36dcf2; --emerald:#6ee7b4;
+    --bg:#05070A; --card:#11161D; --border:#202731; --fg:#F5F7FA;
+    --muted:#8B95A3; --muted-2:#5b6376; --blue:#2563EB; --blue-bright:#3B82F6; --soft-blue:#0F274D;
     --display:'Space Grotesk',sans-serif; --body:'Outfit',sans-serif; --mono:'DM Mono',monospace;
   }
   *{box-sizing:border-box;}
@@ -20,7 +25,7 @@
   img{max-width:100%;display:block;}
   a{color:inherit;}
   .wrap{max-width:1120px;margin:0 auto;padding:0 20px;}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue-bright);}
   h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0;color:#f2f4f8;}
   h2{font-size:clamp(26px,4vw,38px);font-weight:600;}
   h3{font-size:18px;font-weight:600;}
@@ -29,19 +34,18 @@
   section:first-of-type{border-top:none;}
   .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:transform .15s ease,opacity .15s ease;}
   .btn:hover{transform:translateY(-1px);}
-  .btn-primary{background:var(--cyan);color:#08131a;}
+  .btn-primary{background:var(--blue);color:#fff;}
   .btn-primary:hover{opacity:.9;}
   .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--border);}
   .btn-ghost:hover{border-color:#39415a;}
   .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;}
   .grid{display:grid;gap:16px;}
-  .noise{background-image:radial-gradient(1200px 500px at 20% -10%, rgba(54,220,242,.08), transparent 60%),radial-gradient(900px 400px at 100% 0%, rgba(110,231,180,.06), transparent 60%);}
+  .noise{background-image:radial-gradient(1200px 500px at 20% -10%, rgba(37,99,235,.10), transparent 60%),radial-gradient(900px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%);}
 
-  /* nav */
-  header{position:sticky;top:0;z-index:40;background:rgba(11,14,25,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;}
+  header{position:sticky;top:0;z-index:40;background:rgba(5,7,10,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
   .brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:17px;color:#f2f4f8;text-decoration:none;}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);}
+  .brand img{width:26px;height:26px;border-radius:7px;}
   .navlinks{display:none;gap:28px;font-size:13.5px;color:var(--muted);}
   .navlinks a{text-decoration:none;}
   .navlinks a:hover{color:var(--fg);}
@@ -50,37 +54,33 @@
   .navcta .btn-ghost{display:none;}
   @media(min-width:640px){.navcta .btn-ghost{display:inline-flex;}}
 
-  /* hero */
   .hero{padding-top:96px;padding-bottom:56px;text-align:center;}
   .hero h1{font-size:clamp(34px,6vw,58px);font-weight:700;max-width:780px;margin:18px auto 0;}
-  .hero .sub{font-family:var(--mono);font-size:14px;color:var(--emerald);margin-top:16px;letter-spacing:.02em;}
+  .hero .sub{font-family:var(--mono);font-size:14px;color:var(--blue-bright);margin-top:16px;letter-spacing:.02em;}
   .hero p.lead{max-width:560px;margin:18px auto 0;font-size:15.5px;}
   .hero-ctas{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap;}
 
-  /* terminal signature strip */
   .terminal{max-width:640px;margin:56px auto 0;text-align:left;overflow:hidden;}
   .terminal .bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);}
   .terminal .bar span{width:8px;height:8px;border-radius:50%;background:#2a3145;}
   .terminal-body{padding:16px 18px 20px;font-family:var(--mono);font-size:12.5px;color:var(--muted);min-height:120px;}
   .terminal-line{opacity:0;transform:translateY(4px);animation:tline .5s ease forwards;white-space:pre-wrap;margin-bottom:10px;}
-  .terminal-line .tag{color:var(--cyan);}
-  .terminal-line.onchain .tag{color:var(--emerald);}
+  .terminal-line .tag{color:var(--blue-bright);}
+  .terminal-line.evidence .tag{color:#34d399;}
   @keyframes tline{to{opacity:1;transform:translateY(0);}}
 
-  /* what is zenthra */
   .split{display:grid;gap:40px;align-items:center;}
   @media(min-width:900px){.split{grid-template-columns:1fr 1fr;}}
   .split p{font-size:15px;margin-top:14px;}
   .pipeline{display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:12px;}
   .pipeline .node{padding:12px 14px;border-radius:10px;text-align:center;}
   .pipeline .arrow{text-align:center;color:var(--muted-2);font-size:11px;}
-  .pipeline .n1{background:rgba(54,220,242,.08);border:1px solid rgba(54,220,242,.25);color:var(--cyan);}
+  .pipeline .n1{background:rgba(37,99,235,.10);border:1px solid rgba(37,99,235,.3);color:var(--blue-bright);}
   .pipeline .n2{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--fg);}
   .pipeline .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-  .pipeline .n3{background:rgba(110,231,180,.06);border:1px solid rgba(110,231,180,.2);color:var(--emerald);font-size:10.5px;padding:10px 6px;}
-  .pipeline .n4{background:rgba(255,255,255,.03);border:1px dashed var(--border);color:var(--muted);}
+  @media(max-width:520px){.pipeline .row3{grid-template-columns:1fr;}}
+  .pipeline .n3{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);color:var(--blue-bright);font-size:10.5px;padding:10px 6px;}
 
-  /* features */
   .feat-group-label{display:flex;align-items:center;gap:10px;margin:0 0 16px;}
   .feat-group-label .eyebrow{margin:0;}
   .feat-group-label .line{flex:1;height:1px;background:var(--border);}
@@ -88,48 +88,44 @@
   @media(min-width:640px){.feat-grid{grid-template-columns:1fr 1fr;}}
   @media(min-width:960px){.feat-grid{grid-template-columns:1fr 1fr 1fr;}}
   .feat-card{padding:20px;}
-  .feat-card svg{width:20px;height:20px;stroke:var(--cyan);margin-bottom:12px;}
-  .feat-card.onchain svg{stroke:var(--emerald);}
+  .feat-card svg{width:20px;height:20px;stroke:var(--blue-bright);margin-bottom:12px;}
   .feat-card h3{margin-bottom:6px;}
   .feat-card p{font-size:13.5px;}
+  .feat-card.clickable{text-decoration:none;transition:border-color .15s ease,transform .15s ease;display:block;}
+  .feat-card.clickable:hover{border-color:rgba(59,130,246,.4);transform:translateY(-2px);}
 
-  /* how it works */
-  .steps{grid-template-columns:1fr;counter-reset:step;}
-  @media(min-width:760px){.steps{grid-template-columns:repeat(4,1fr);}}
-  .step{padding:22px 18px;position:relative;}
-  .step .num{font-family:var(--mono);font-size:26px;color:var(--border);font-weight:500;}
-  .step h3{margin-top:10px;font-size:15px;}
-  .step p{font-size:13px;margin-top:6px;}
+  .steps{grid-template-columns:1fr;}
+  @media(min-width:760px){.steps{grid-template-columns:repeat(5,1fr);}}
+  .step{padding:20px 16px;position:relative;}
+  .step .num{font-family:var(--mono);font-size:24px;color:var(--border);font-weight:500;}
+  .step h3{margin-top:8px;font-size:14px;}
+  .step p{font-size:12.5px;margin-top:6px;}
 
-  /* whatsapp */
-  .wa-grid{grid-template-columns:1fr;}
-  @media(min-width:760px){.wa-grid{grid-template-columns:1fr 1fr;}}
-  .wa-card{padding:28px;}
-  .wa-card .eyebrow{margin-bottom:10px;}
-  .wa-card p{font-size:13.5px;margin-top:8px;}
-  .wa-card .btn{margin-top:18px;}
+  .tier-grid{grid-template-columns:1fr;}
+  @media(min-width:760px){.tier-grid{grid-template-columns:repeat(4,1fr);}}
+  .tier-card{padding:18px;text-align:center;}
+  .tier-card .name{font-family:var(--display);font-size:15px;font-weight:600;color:#f2f4f8;}
+  .tier-card .range{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:4px;}
+  .tier-card.strong{border-color:rgba(52,211,153,.35);}
+  .tier-card.valid{border-color:rgba(59,130,246,.35);}
+  .tier-card.watch{border-color:rgba(245,158,11,.3);}
 
-  /* pricing */
   .price-grid{grid-template-columns:1fr;}
   @media(min-width:640px){.price-grid{grid-template-columns:1fr 1fr;}}
   @media(min-width:1000px){.price-grid{grid-template-columns:repeat(4,1fr);}}
   .price-card{padding:22px;display:flex;flex-direction:column;}
-  .price-card.featured{border-color:rgba(54,220,242,.4);background:linear-gradient(180deg,rgba(54,220,242,.05),var(--card));}
+  .price-card.featured{border-color:rgba(59,130,246,.4);background:linear-gradient(180deg,rgba(59,130,246,.06),var(--card));}
   .price-card .amt{font-family:var(--display);font-size:26px;font-weight:600;color:#f2f4f8;margin-top:10px;}
   .price-card .amt span{font-family:var(--mono);font-size:11px;color:var(--muted-2);font-weight:400;}
   .price-card ul{list-style:none;padding:0;margin:16px 0 0;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:7px;}
   .price-card li:before{content:"— ";color:var(--muted-2);}
   .price-card .btn{margin-top:20px;}
 
-  /* about / contact */
-  .about-grid{grid-template-columns:1fr;gap:28px;}
-  @media(min-width:760px){.about-grid{grid-template-columns:1.3fr 1fr;}}
   .contact-links{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
   .contact-links a{font-size:14px;text-decoration:none;display:flex;align-items:center;gap:8px;}
-  .contact-links a:hover{color:var(--cyan);}
+  .contact-links a:hover{color:var(--blue-bright);}
 
-  /* legal */
-  .legal-note{font-size:12px;color:var(--muted-2);border-left:2px solid var(--cyan);padding-left:12px;margin-top:14px;}
+  .legal-note{font-size:12px;color:var(--muted-2);border-left:2px solid var(--blue-bright);padding-left:12px;margin-top:14px;}
   details{padding:16px 0;border-top:1px solid var(--border);}
   details:last-child{border-bottom:1px solid var(--border);}
   summary{cursor:pointer;font-family:var(--display);font-size:15px;font-weight:600;color:#f2f4f8;list-style:none;display:flex;justify-content:space-between;align-items:center;}
@@ -155,18 +151,16 @@
 <header>
   <div class="wrap">
     <nav>
-      <a href="#top" class="brand"><span class="dot"></span>Zenthra</a>
+      <a href="#top" class="brand"><img src="/zenthra-logo.png" alt="Zenthra" />Zenthra</a>
       <div class="navlinks">
-        <a href="#what">Tentang</a>
-        <a href="#features">Fitur</a>
-        <a href="#how">Cara Kerja</a>
-        <a href="#whatsapp">WhatsApp</a>
-        <a href="#pricing">Harga</a>
-        <a href="#contact">Kontak</a>
+        <a href="#what">Product</a>
+        <a href="#futures">Futures</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#pricing">Pricing</a>
       </div>
       <div class="navcta">
-        <a href="/app" class="btn btn-ghost">Masuk / Daftar</a>
-        <a id="nav-wa-cta" href="#" target="_blank" rel="noopener" class="btn btn-primary">Chat with Zenthra</a>
+        <a href="/app" class="btn btn-ghost">Sign in</a>
+        <a href="/app/ai" class="btn btn-primary">Start Research →</a>
       </div>
     </nav>
   </div>
@@ -177,117 +171,129 @@
   <!-- HERO -->
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow">Zenthra AI Engine</span>
-      <h1>Your AI Assistant,<br />right inside WhatsApp.</h1>
-      <div class="sub">AI for everyday life. Intelligence for the on-chain world.</div>
-      <p class="lead">Ngobrol, riset, brainstorm, bikin sticker — sampai analisa wallet, token, dan sinyal trading real-time. Satu asisten, satu tempat: WhatsApp kamu.</p>
+      <span class="eyebrow">Zenthra — AI Agent for On-Chain Intelligence</span>
+      <h1>Intelligence for the<br />on-chain world.</h1>
+      <div class="sub">Ask a question. Zenthra does the research.</div>
+      <p class="lead">You don't need a wallet address, a token address, or an exact entity to start. Ask what you actually want to know — Zenthra decides what data and tools the question needs.</p>
       <div class="hero-ctas">
-        <a id="hero-wa-cta" href="#" target="_blank" rel="noopener" class="btn btn-primary">Chat with Zenthra →</a>
-        <a href="#whatsapp" class="btn btn-ghost">Connect your WhatsApp</a>
+        <a href="/app/ai" class="btn btn-primary">Start Research →</a>
+        <a href="#what" class="btn btn-ghost">Explore Intelligence</a>
       </div>
 
       <div class="terminal panel" data-reveal>
-        <div class="bar"><span></span><span></span><span></span></div>
+        <div class="bar"><span></span><span></span><span></span><span style="margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);">Illustrative example, not live output</span></div>
         <div class="terminal-body" id="terminal-body"></div>
       </div>
     </div>
   </section>
 
-  <!-- WHAT IS ZENTHRA -->
+  <!-- WHAT ZENTHRA DOES -->
   <section id="what">
     <div class="wrap split">
       <div data-reveal>
-        <span class="eyebrow">What is Zenthra</span>
-        <h2 style="margin-top:10px;">Satu engine intelligence, semua channel kamu.</h2>
-        <p>Zenthra adalah AI assistant serba bisa — buat nulis, mikir, cari info, sampai bikin konten kreatif — yang kebetulan punya keunggulan tajam di dunia on-chain: wallet analysis, token research, whale &amp; smart-money tracking, sampai sinyal trading berbasis data live.</p>
-        <p style="margin-top:12px;">Otaknya satu (Zenthra AI Engine), tapi bisa diakses dari mana aja: WhatsApp, web, dan nanti Android — tanpa perlu bangun ulang dari nol tiap nambah channel baru.</p>
+        <span class="eyebrow">What Zenthra does</span>
+        <h2 style="margin-top:10px;">One research loop, every question.</h2>
+        <p>Zenthra isn't a dashboard you search — it's an agent that investigates. Ask a question, and it works through market data, on-chain signals, and derivatives context, cross-checks what it finds, and gives you an answer with the evidence attached.</p>
+        <p style="margin-top:12px;">No trade gets executed and no number gets invented — deterministic calculations stay outside the language model, and anything Zenthra can't verify, it says so plainly instead of guessing.</p>
       </div>
       <div class="panel" style="padding:22px;" data-reveal>
         <div class="pipeline">
-          <div class="node n1">AI / LLM Layer</div>
-          <div class="arrow">↓</div>
-          <div class="node n2">Tool Engine</div>
+          <div class="node n1">Question</div>
           <div class="arrow">↓</div>
           <div class="row3">
-            <div class="n3">On-chain Data</div>
-            <div class="n3">Market Data</div>
-            <div class="n3">Creative Tools</div>
+            <div class="n3">Discover</div>
+            <div class="n3">Investigate</div>
+            <div class="n3">Explain</div>
           </div>
           <div class="arrow">↓</div>
-          <div class="node n2">Zenthra API</div>
-          <div class="arrow">↓</div>
-          <div class="node n4">WhatsApp · Web · Android</div>
+          <div class="node n2">Monitor</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
-  <section id="features">
+  <!-- DISCOVER -->
+  <section id="discover">
     <div class="wrap">
       <div style="text-align:center;max-width:520px;margin:0 auto 44px;" data-reveal>
-        <span class="eyebrow">Kemampuan</span>
-        <h2 style="margin-top:10px;">Dua dunia, satu asisten.</h2>
+        <span class="eyebrow">Discover</span>
+        <h2 style="margin-top:10px;">Don't know what to ask yet? Start here.</h2>
       </div>
-
-      <div class="feat-group-label" data-reveal><span class="eyebrow">Sehari-hari</span><div class="line"></div></div>
-      <div class="grid feat-grid" style="margin-bottom:48px;" data-reveal>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><h3>Chat &amp; brainstorm</h3><p>Tanya jawab, ide kreatif, sampai diskusi mendalam — natural kayak ngobrol sama teman yang pinter.</p></div>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><h3>Writing &amp; research</h3><p>Nulis, ringkas, riset topik apa aja — siap pakai, bukan draf setengah jadi.</p></div>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><h3>Sticker &amp; image tools</h3><p>Kirim foto, jadiin sticker WhatsApp langsung — plus enhancement kualitas gambar.</p></div>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.7 1 6.3 2.7"/><path d="M21 3v6h-6"/></svg><h3>Utility &amp; download</h3><p>Konversi, hitung, unduh file langsung — beres tanpa buka app lain.</p></div>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><h3>Belajar &amp; hiburan</h3><p>Penjelasan konsep apa pun, sampai obrolan santai buat isi waktu luang.</p></div>
-        <div class="panel feat-card"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2 3 7l9 5 9-5-9-5Z"/><path d="M3 12l9 5 9-5M3 17l9 5 9-5"/></svg><h3>Semua di satu tempat</h3><p>Nggak perlu app baru. Semua kerjaan sehari-hari lewat WhatsApp yang udah kamu buka tiap hari.</p></div>
-      </div>
-
-      <div class="feat-group-label" data-reveal><span class="eyebrow">Keunggulan On-chain</span><div class="line"></div></div>
       <div class="grid feat-grid" data-reveal>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><h3>Wallet analysis</h3><p>Cek saldo, holding, dan histori aktivitas satu alamat wallet secara instan.</p></div>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg><h3>Token &amp; market data</h3><p>Harga, volume, market cap real-time — plus konteks risiko yang jarang keliatan di app biasa.</p></div>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><h3>Whale &amp; smart-money</h3><p>Pantau transfer besar dan pergerakan wallet yang biasanya bergerak duluan.</p></div>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5"/><rect x="12" y="9" width="3" height="9"/><rect x="17" y="6" width="3" height="12"/></svg><h3>Sinyal trading</h3><p>Entry, stop loss, take profit berbasis SMC + indikator teknikal — lengkap sama alasannya, bukan cuma angka.</p></div>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.2 4.2l4.2 4.2M15.5 15.5l4.3 4.3M1 12h6M17 12h6M4.2 19.8l4.2-4.2M15.5 8.5l4.3-4.3"/></svg><h3>Entities</h3><p>Kenali exchange wallet, market maker, dan protokol besar yang lagi bergerak.</p></div>
-        <div class="panel feat-card onchain"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg><h3>Risk check</h3><p>Sebelum entry, Zenthra bantu itung ukuran posisi aman berdasar akun &amp; stop loss kamu.</p></div>
+        <a href="/app/discover" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><h3>Unusual activity</h3><p>Find unusual on-chain activity today.</p></a>
+        <a href="/app/discover" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><h3>Whale accumulation</h3><p>Who is accumulating SOL right now?</p></a>
+        <a href="/app/discover" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><h3>Smart money</h3><p>What are whales buying this week?</p></a>
+        <a href="/app/discover" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2 3 7l9 5 9-5-9-5Z"/><path d="M3 12l9 5 9-5M3 17l9 5 9-5"/></svg><h3>Emerging tokens</h3><p>Surface tokens worth a closer look.</p></a>
+        <a href="/app/discover" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg><h3>Market anomalies</h3><p>Why is this token suddenly moving?</p></a>
+        <a href="/app/futures" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg><h3>Futures setups</h3><p>Are there interesting futures setups right now?</p></a>
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section id="how">
-    <div class="wrap">
-      <div style="text-align:center;max-width:480px;margin:0 auto 40px;" data-reveal>
-        <span class="eyebrow">Cara Kerja</span>
-        <h2 style="margin-top:10px;">Empat langkah, dari tanya sampai jawab.</h2>
-      </div>
-      <div class="grid steps" data-reveal>
-        <div class="panel step"><div class="num">01</div><h3>Chat lewat WhatsApp</h3><p>Nggak perlu install apa-apa — kirim pesan ke nomor Zenthra, langsung mulai.</p></div>
-        <div class="panel step"><div class="num">02</div><h3>Tanya apa aja</h3><p>Obrolan biasa, riset, sampai "cek wallet ini" — satu asisten buat semua.</p></div>
-        <div class="panel step"><div class="num">03</div><h3>Tool Engine bekerja</h3><p>Zenthra manggil data live yang tepat — bukan ngarang, bukan tebakan.</p></div>
-        <div class="panel step"><div class="num">04</div><h3>Dapet hasilnya</h3><p>Jawaban, sinyal lengkap dengan alasan, atau hasil kreatif — siap pakai.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHATSAPP -->
-  <section id="whatsapp">
+  <!-- AI RESEARCH -->
+  <section id="ai-research">
     <div class="wrap">
       <div style="text-align:center;max-width:520px;margin:0 auto 40px;" data-reveal>
-        <span class="eyebrow">WhatsApp Integration</span>
-        <h2 style="margin-top:10px;">Dua cara mulai pakai Zenthra.</h2>
+        <span class="eyebrow">AI Research</span>
+        <h2 style="margin-top:10px;">Watch it actually research.</h2>
       </div>
-      <div class="grid wa-grid" data-reveal>
-        <div class="panel wa-card">
-          <span class="eyebrow">Opsi 1</span>
-          <h3 style="margin-top:8px;">Chat with Zenthra</h3>
-          <p>Cara paling cepat — langsung chat ke nomor WhatsApp resmi Zenthra dan mulai pakai AI-nya. Gratis buat coba, kuota harian berlaku.</p>
-          <a id="wa-card-cta" href="#" target="_blank" rel="noopener" class="btn btn-primary">Buka WhatsApp →</a>
+      <div class="grid steps" data-reveal>
+        <div class="panel step"><div class="num">01</div><h3>Understand</h3><p>Zenthra parses what you're really asking.</p></div>
+        <div class="panel step"><div class="num">02</div><h3>Plan</h3><p>Decides which tools and data the question needs.</p></div>
+        <div class="panel step"><div class="num">03</div><h3>Research</h3><p>Pulls live market, on-chain, and derivatives data.</p></div>
+        <div class="panel step"><div class="num">04</div><h3>Cross-check</h3><p>Compares sources instead of trusting one.</p></div>
+        <div class="panel step"><div class="num">05</div><h3>Answer</h3><p>Plain-language answer, evidence attached, monitor optional.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUTURES INTELLIGENCE -->
+  <section id="futures">
+    <div class="wrap">
+      <div style="text-align:center;max-width:560px;margin:0 auto 32px;" data-reveal>
+        <span class="eyebrow">Futures Intelligence</span>
+        <h2 style="margin-top:10px;">A research product, not a signal bot.</h2>
+        <p style="margin-top:12px;">Every read across BTC, ETH, SOL, BNB, XRP, DOGE, SUI, AVAX, LINK, and ADA gets a deterministic Confluence Score — market structure, momentum, open interest, funding, and more, each weighted and shown, never a single made-up number.</p>
+      </div>
+      <div class="grid tier-grid" data-reveal>
+        <div class="panel tier-card strong"><div class="name">Strong Setup</div><div class="range">80–100</div></div>
+        <div class="panel tier-card valid"><div class="name">Valid Setup</div><div class="range">70–79</div></div>
+        <div class="panel tier-card watch"><div class="name">Watch</div><div class="range">55–69</div></div>
+        <div class="panel tier-card"><div class="name">No Trade</div><div class="range">&lt;55</div></div>
+      </div>
+      <p style="text-align:center;font-size:12.5px;margin-top:18px;color:var(--muted-2);">No Trade is a normal result, not a failure — Zenthra never states or implies a percentage chance of profit.</p>
+    </div>
+  </section>
+
+  <!-- WALLET / ENTITY / SMART MONEY -->
+  <section id="intelligence">
+    <div class="wrap">
+      <div class="feat-group-label" data-reveal><span class="eyebrow">Wallet, Entity &amp; Smart Money Intelligence</span><div class="line"></div></div>
+      <div class="grid feat-grid" data-reveal>
+        <a href="/app/wallet" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><h3>Wallets</h3><p>Balance and holdings for any Solana address, pulled live.</p></a>
+        <a href="/app/entities" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.2 4.2l4.2 4.2M15.5 15.5l4.3 4.3M1 12h6M17 12h6M4.2 19.8l4.2-4.2M15.5 8.5l4.3-4.3"/></svg><h3>Entities</h3><p>Labeled wallets and organizations in the intelligence graph.</p></a>
+        <a href="/app/smartmoney" class="panel feat-card clickable"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg><h3>Smart Money</h3><p>Track conviction from wallets with a track record.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE-FIRST -->
+  <section id="evidence">
+    <div class="wrap split">
+      <div class="panel" style="padding:24px;order:2;" data-reveal>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin-bottom:14px;">Illustrative example — not a live reading</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Market Structure</span><span style="font-family:var(--mono);color:var(--fg);">confirmed</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Open Interest</span><span style="font-family:var(--mono);color:var(--fg);">rising +3.2%</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Liquidations</span><span style="font-family:var(--mono);color:var(--muted-2);">unavailable</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">On-chain</span><span style="font-family:var(--mono);color:var(--muted-2);">unavailable</span></div>
         </div>
-        <div class="panel wa-card">
-          <span class="eyebrow">Opsi 2</span>
-          <h3 style="margin-top:8px;">Connect your WhatsApp</h3>
-          <p>Punya nomor WhatsApp Business sendiri? Tautkan lewat WhatsApp Embedded Signup resmi Meta — bukan automation WhatsApp Web tidak resmi.</p>
-          <a href="/app/whatsapp" class="btn btn-ghost">Masuk &amp; hubungkan →</a>
-        </div>
+      </div>
+      <div data-reveal style="order:1;">
+        <span class="eyebrow">Evidence-first intelligence</span>
+        <h2 style="margin-top:10px;">If Zenthra can't verify it, it says so.</h2>
+        <p>Every research answer shows what backed it — and what didn't. When a data source isn't connected, Zenthra shows "unavailable," never a plausible-sounding guess dressed up as fact.</p>
+        <p style="margin-top:12px;">That's a deliberate trade: it means some categories start at zero until real sources are wired up — and it means when Zenthra does give you a number, it's real.</p>
       </div>
     </div>
   </section>
@@ -297,29 +303,12 @@
     <div class="wrap">
       <div style="text-align:center;max-width:520px;margin:0 auto 40px;" data-reveal>
         <span class="eyebrow">Pricing</span>
-        <h2 style="margin-top:10px;">Tier murah buat pelajar, unlimited buat trader aktif.</h2>
+        <h2 style="margin-top:10px;">Free to start, unlimited for active researchers.</h2>
       </div>
       <div class="grid price-grid" id="price-grid" data-reveal>
-        <!-- diisi JS dari /api/billing/plans, dengan fallback statis di bawah -->
+        <!-- filled by JS from /api/billing/plans, static fallback below -->
       </div>
-      <p style="text-align:center;font-size:12px;margin-top:20px;color:var(--muted-2);">Pembayaran via QRIS, dikonfirmasi manual — biasanya aktif dalam beberapa jam.</p>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="wrap about-grid grid">
-      <div data-reveal>
-        <span class="eyebrow">About</span>
-        <h2 style="margin-top:10px;">Dibangun dari pengalaman langsung di market.</h2>
-        <p style="margin-top:14px;font-size:14.5px;">Zenthra dibangun oleh developer &amp; trader asal Indonesia yang tiap hari terjun langsung di crypto futures — bukan tim besar yang belajar dari teori. Setiap fitur, dari sinyal sampai deteksi smart money, lahir dari kebutuhan nyata: alat yang beneran dipakai buat trading sendiri, sebelum dibagi ke orang lain.</p>
-        <p style="margin-top:12px;font-size:14.5px;">Sekarang Zenthra berkembang jadi lebih dari itu — AI assistant harian yang kebetulan paling jago soal on-chain.</p>
-      </div>
-      <div class="panel" style="padding:24px;" data-reveal>
-        <span class="eyebrow">Tim</span>
-        <h3 style="margin-top:10px;">Founder &amp; Builder</h3>
-        <p style="margin-top:8px;font-size:13.5px;">Zenthra dibangun oleh sebuah tim yang didorong oleh rasa ingin tahu, kreativitas, dan visi bersama tentang bagaimana intelligence dapat berkembang. Dipimpin oleh @marvellysf sebagai Founder & Developer dari Zenthra Team, kami terus mengembangkan Zenthra melalui ide, teknologi, dan semangat untuk membangun sesuatu yang membantu orang memahami, menciptakan, dan mengeksplorasi lebih banyak. <em style="color:var
-      </div>
+      <p style="text-align:center;font-size:12px;margin-top:20px;color:var(--muted-2);">Paid tiers via QRIS, confirmed manually — usually active within a few hours.</p>
     </div>
   </section>
 
@@ -328,11 +317,9 @@
     <div class="wrap">
       <div style="max-width:480px;" data-reveal>
         <span class="eyebrow">Contact</span>
-        <h2 style="margin-top:10px;">Ada pertanyaan atau mau kerja sama?</h2>
-        <p style="margin-top:10px;">Hubungi lewat WhatsApp buat respons tercepat, atau email buat urusan formal/kerja sama.</p>
+        <h2 style="margin-top:10px;">Questions, or want to work together?</h2>
         <div class="contact-links">
-          <a id="contact-wa" href="#" target="_blank" rel="noopener">→ WhatsApp: <span style="color:var(--cyan);">083159266007</span></a>
-          <a href="mailto: zenthraintelligence@gmail.com">→ Email: zenthraintelligence@gmail.com</a>
+          <a href="mailto:zenthraintelligence@gmail.com">→ Email: zenthraintelligence@gmail.com</a>
         </div>
       </div>
     </div>
@@ -343,25 +330,21 @@
     <div class="wrap" style="max-width:760px;">
       <div style="margin-bottom:28px;" data-reveal>
         <span class="eyebrow">Terms &amp; Privacy</span>
-        <h2 style="margin-top:10px;">Ringkasan singkat.</h2>
-        <div class="legal-note">Ini draf awal, BUKAN dokumen hukum final — belum direview pengacara. Sebelum go-live publik dan mulai nerima pembayaran, konsultasikan Terms of Service &amp; Privacy Policy lengkap ke praktisi hukum, terutama soal disclaimer trading dan perlindungan data pengguna sesuai UU PDP.</div>
+        <h2 style="margin-top:10px;">Short version.</h2>
+        <div class="legal-note">This is an early draft, not final legal copy — it hasn't been reviewed by a lawyer yet. Before accepting public payments, get full Terms of Service and a Privacy Policy reviewed properly, especially the trading disclaimer and data-protection compliance for your jurisdiction.</div>
       </div>
       <div data-reveal>
         <details open>
-          <summary>Bukan nasihat finansial</summary>
-          <p>Semua sinyal, analisa, dan output Zenthra bersifat informasional — bukan ajakan atau nasihat investasi. Keputusan trading sepenuhnya tanggung jawab pengguna.</p>
+          <summary>Not financial advice</summary>
+          <p>Every signal, score, and research answer from Zenthra is informational — not investment advice or a solicitation. Trading decisions are entirely your own responsibility.</p>
         </details>
         <details>
-          <summary>Data yang dikumpulkan</summary>
-          <p>Zenthra menyimpan riwayat chat, alamat wallet yang kamu analisa, dan data penggunaan buat keperluan kuota — nggak dijual ke pihak ketiga.</p>
+          <summary>Data we collect</summary>
+          <p>Zenthra stores your chat history, the wallet addresses you research, and usage data for quota purposes — never sold to third parties.</p>
         </details>
         <details>
-          <summary>Pembayaran &amp; langganan</summary>
-          <p>Pembayaran tier berbayar diproses lewat QRIS dan dikonfirmasi manual oleh tim Zenthra saat ini. Langganan bisa dibatalkan kapan saja lewat halaman akun.</p>
-        </details>
-        <details>
-          <summary>Koneksi WhatsApp</summary>
-          <p>Zenthra hanya terhubung ke WhatsApp lewat WhatsApp Business Platform resmi Meta. Kami tidak pernah menggunakan automation WhatsApp Web yang melanggar Terms of Service Meta.</p>
+          <summary>Payments &amp; subscriptions</summary>
+          <p>Paid tiers are processed via QRIS and currently confirmed manually by the Zenthra team. Cancel anytime from your account page.</p>
         </details>
       </div>
     </div>
@@ -372,14 +355,14 @@
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <a href="#top" class="brand"><span class="dot"></span>Zenthra</a>
+      <a href="#top" class="brand"><img src="/zenthra-logo.png" alt="Zenthra" />Zenthra</a>
       <div class="foot-links">
-        <a href="#what">Tentang</a>
-        <a href="#features">Fitur</a>
-        <a href="#pricing">Harga</a>
+        <a href="#what">Product</a>
+        <a href="#futures">Futures</a>
+        <a href="#pricing">Pricing</a>
         <a href="#legal">Terms</a>
         <a href="#legal">Privacy</a>
-        <a href="#contact">Kontak</a>
+        <a href="#contact">Contact</a>
       </div>
     </div>
     <div class="copyright">© <span id="year"></span> Zenthra. All rights reserved.</div>
@@ -387,37 +370,18 @@
 </footer>
 
 <script>
-  // ====== GANTI DUA KONSTANTA INI SEBELUM PUBLISH ======
-  // Nomor WhatsApp Business RESMI Zenthra, format internasional TANPA "+" atau spasi.
-  // Ini BUKAN phone_number_id dari Meta — ini nomor telepon aslinya.
-  const ZENTHRA_WA_NUMBER = "6285862394381"; // TODO: ganti ke nomor asli
-  // Base URL API — SEKARANG SAME-ORIGIN (project digabung: landing + dashboard
-  // + API dalam satu domain), jadi default kosong (relatif) udah cukup. Cuma
-  // perlu diisi kalau suatu saat landing di-deploy TERPISAH lagi dari API-nya.
-  const API_BASE = "";
-  // ======================================================
-  // Link ke dashboard (href="/app/...") di HTML udah relatif & same-origin,
-  // gak perlu di-rewrite apa-apa lagi — beda dari sebelumnya waktu landing &
-  // dashboard masih 2 domain terpisah.
-
-  const waLink = `https://wa.me/${ZENTHRA_WA_NUMBER}?text=${encodeURIComponent("Halo Zenthra!")}`;
-  ["nav-wa-cta", "hero-wa-cta", "wa-card-cta"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.href = waLink;
-  });
-  const contactWa = document.getElementById("contact-wa");
-  if (contactWa) contactWa.href = `https://wa.me/${ZENTHRA_WA_NUMBER}`;
-
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // Terminal signature strip — bergantian nunjukin dua dunia Zenthra.
+  // Terminal preview — on-chain research examples only (no unrelated
+  // generic-assistant use cases mixed in; see the Master Blueprint on
+  // keeping Zenthra's identity focused on on-chain intelligence).
   const lines = [
-    { tag: "chat ›", text: "ringkas artikel ini jadi 3 poin penting", cls: "" },
-    { tag: "onchain ›", text: "SOL/USDT — LONG bias, score 84, entry 212.5, SL 204.0", cls: "onchain" },
-    { tag: "chat ›", text: "buatin caption buat postingan besok", cls: "" },
-    { tag: "onchain ›", text: "wallet 7xKX…osgA baru terima 40.000 USDC", cls: "onchain" },
-    { tag: "chat ›", text: "jadiin foto ini sticker WhatsApp", cls: "" },
-    { tag: "onchain ›", text: "JUP naik 7.9% / 24h, volume $210M", cls: "onchain" },
+    { tag: "ask ›", text: "who is accumulating SOL right now?", cls: "" },
+    { tag: "zenthra ›", text: "3 wallets added 42k SOL combined in 24h — evidence attached", cls: "evidence" },
+    { tag: "ask ›", text: "are there interesting futures setups right now?", cls: "" },
+    { tag: "zenthra ›", text: "ETHUSDT — Watch (61/100). Market structure + momentum confirmed, funding neutral", cls: "evidence" },
+    { tag: "ask ›", text: "why is this token suddenly moving?", cls: "" },
+    { tag: "zenthra ›", text: "volume +180% vs 7d avg, no matching on-chain signal yet — flagged unconfirmed", cls: "evidence" },
   ];
   const body = document.getElementById("terminal-body");
   let i = 0;
@@ -430,11 +394,10 @@
     body.appendChild(div);
     while (body.children.length > 4) body.removeChild(body.firstChild);
     i++;
-    setTimeout(typeLine, 2200);
+    setTimeout(typeLine, 2400);
   }
   typeLine();
 
-  // Reveal-on-scroll
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!prefersReduced && "IntersectionObserver" in window) {
     const io = new IntersectionObserver(
@@ -446,7 +409,8 @@
     document.querySelectorAll("[data-reveal]").forEach((el) => el.classList.add("in"));
   }
 
-  // Pricing — fetch live dari API, fallback ke data statis kalau gagal/API_BASE belum diisi.
+  // Pricing — fetch live from the API (same-origin, combined deployment),
+  // fall back to static data only if that request fails.
   const FALLBACK_PLANS = [
     { id: "free", label: "Free", priceIdrPerMonth: 0, quotas: { chat: 15, onchain: 3, creative: 2 } },
     { id: "pelajar", label: "Pelajar", priceIdrPerMonth: 12000, quotas: { chat: 100, onchain: 20, creative: 15 } },
@@ -458,29 +422,26 @@
     if (!grid) return;
     grid.innerHTML = plans
       .map((p) => {
-        const price = p.priceIdrPerMonth === 0 ? "Gratis" : `Rp${Number(p.priceIdrPerMonth).toLocaleString("id-ID")}`;
+        const price = p.priceIdrPerMonth === 0 ? "Free" : `Rp${Number(p.priceIdrPerMonth).toLocaleString("id-ID")}`;
         const featured = p.id === "pelajar" ? " featured" : "";
-        const fmt = (v) => (v === "unlimited" ? "Unlimited" : `${v}/hari`);
+        const fmt = (v) => (v === "unlimited" ? "Unlimited" : `${v}/day`);
         return `<div class="panel price-card${featured}">
           <span class="eyebrow">${p.label}</span>
-          <div class="amt">${price}${p.priceIdrPerMonth > 0 ? '<span> /bulan</span>' : ""}</div>
+          <div class="amt">${price}${p.priceIdrPerMonth > 0 ? '<span> /month</span>' : ""}</div>
           <ul>
-            <li>Chat ${fmt(p.quotas.chat)}</li>
-            <li>On-chain lookup ${fmt(p.quotas.onchain)}</li>
-            <li>Creative tools ${fmt(p.quotas.creative)}</li>
+            <li>AI research ${fmt(p.quotas.chat)}</li>
+            <li>On-chain lookups ${fmt(p.quotas.onchain)}</li>
           </ul>
-          <a href="/app/pricing" class="btn ${p.id === "free" ? "btn-ghost" : "btn-primary"}">${p.id === "free" ? "Mulai gratis" : "Pilih tier"}</a>
+          <a href="/app/pricing" class="btn ${p.id === "free" ? "btn-ghost" : "btn-primary"}">${p.id === "free" ? "Start free" : "Choose plan"}</a>
         </div>`;
       })
       .join("");
   }
   renderPlans(FALLBACK_PLANS);
-  // Same-origin sekarang (project digabung) — selalu coba fetch data live,
-  // fallback ke data statis kalau request-nya gagal.
-  fetch(`${API_BASE}/api/billing/plans`)
+  fetch("/api/billing/plans")
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then(renderPlans)
-    .catch(() => {}); // fallback statis udah kerender, diemin aja kalau fetch gagal
+    .catch(() => {}); // static fallback already rendered above
 </script>
 </body>
 </html>

@@ -25,16 +25,70 @@ export type SignalDirection = typeof SignalDirection[keyof typeof SignalDirectio
 export const SignalDirection = {
   LONG: 'LONG',
   SHORT: 'SHORT',
+  HOLD: 'HOLD',
 } as const;
+
+export type SignalCall = typeof SignalCall[keyof typeof SignalCall];
+
+
+export const SignalCall = {
+  LONG: 'LONG',
+  SHORT: 'SHORT',
+  WATCH: 'WATCH',
+  NO_TRADE: 'NO_TRADE',
+} as const;
+
+export type SignalTier = typeof SignalTier[keyof typeof SignalTier];
+
+
+export const SignalTier = {
+  strong_setup: 'strong_setup',
+  valid_setup: 'valid_setup',
+  watch: 'watch',
+  no_trade: 'no_trade',
+} as const;
+
+export type SignalTierLabel = typeof SignalTierLabel[keyof typeof SignalTierLabel];
+
+
+export const SignalTierLabel = {
+  'Strong Setup': 'Strong Setup',
+  'Valid Setup': 'Valid Setup',
+  Watch: 'Watch',
+  'No Trade': 'No Trade',
+} as const;
+
+export interface ConfluenceCategory {
+  key: string;
+  label: string;
+  weight: number;
+  raw: number;
+  available: boolean;
+  note: string;
+}
 
 export interface Signal {
   pair: string;
+  /** Raw technical/SMC direction from the engine, independent of the confluence tier. */
   direction: SignalDirection;
+  /** The Blueprint's final call — LONG/SHORT only at Strong/Valid Setup tiers, otherwise WATCH or NO_TRADE. */
+  call: SignalCall;
+  tier: SignalTier;
+  tierLabel: SignalTierLabel;
+  /** 0-100 Confluence Score — sum of the weighted categories in `confluence`. */
   score: number;
-  entry: number;
-  stopLoss: number;
-  takeProfit: number;
+  price: number;
+  /** @nullable */
+  entry: number | null;
+  /** @nullable */
+  stopLoss: number | null;
+  /** @nullable */
+  takeProfit: number | null;
+  /** @nullable */
+  takeProfit2: number | null;
   timeframe: string;
+  reasoning: string;
+  confluence: ConfluenceCategory[];
 }
 
 export interface WalletToken {

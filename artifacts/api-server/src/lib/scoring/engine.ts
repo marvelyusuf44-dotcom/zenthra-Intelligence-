@@ -73,15 +73,17 @@ function higherTimeframeConfirms(
 }
 
 /**
- * Fungsi utama scoring engine — pure, deterministic (kecuali pemilihan leverage
- * yang pakai random, bisa di-override lewat parameter `rng` untuk testing).
+ * Fungsi utama scoring engine — pure, fully deterministic (dulu ada satu
+ * langkah random buat milih leverage, sudah dihapus — lihat Confluence Score
+ * di lib/scoring/confluence.ts, yang juga sengaja TIDAK pernah merekomendasikan
+ * leverage).
  *
  * @param symbol         simbol pair, misal "BTCUSDT"
  * @param candles15m     candle 15m, minimal ~150 bar (dipakai buat semua indikator + SMC)
  * @param candles1h      candle 1h opsional, buat konfirmasi trend jangka menengah
  * @param candles4h      candle 4h opsional, buat konfirmasi trend jangka panjang
  * @param config         override threshold, default sama persis dengan bot Python
- * @param rng            random generator untuk pemilihan leverage (default Math.random)
+ * @param rng            tidak lagi dipakai (sebelumnya buat pemilihan leverage) — dibiarkan ada demi kompatibilitas signature, aman diabaikan
  */
 export function generateSignalFromCandles(
   symbol: string,
@@ -255,10 +257,7 @@ export function generateSignalFromCandles(
   }
 
   const totalScore = Math.max(longScore, shortScore);
-  let leverage: number;
-  if (totalScore >= 8) leverage = [20, 25, 30][Math.floor(rng() * 3)];
-  else if (totalScore >= 6) leverage = [10, 15, 20][Math.floor(rng() * 3)];
-  else leverage = [5, 7, 10][Math.floor(rng() * 3)];
+  void rng; // no longer used — leverage used to be picked randomly here (removed, see below)
 
   const score: ScoreBreakdown = {
     longTechnicalScore: longScore,
@@ -278,7 +277,6 @@ export function generateSignalFromCandles(
     entry: (entryLow + entryHigh) / 2,
     stopLoss,
     takeProfit: { tp1, tp2, tp3 },
-    leverage,
     decimals,
     score,
     smc,

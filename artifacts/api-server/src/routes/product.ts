@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { deleteRows, insertRow, listRows, supabaseRequest } from "../services/supabase";
 import { cached } from "../services/cache";
-import { fetchMarkets, fetchWallet } from "../lib/zenthra-data";
+import { fetchMarkets } from "../lib/zenthra-data";
 
 const router: IRouter = Router();
 const watchInput = z.object({ kind: z.enum(["token", "wallet"]), value: z.string().min(1).max(120), label: z.string().max(80).optional() });
@@ -13,7 +13,11 @@ router.get("/market/overview", async (req, res) => {
   try {
     const snapshot = await cached("zenthra:markets", 30, fetchMarkets);
     const totalCap = snapshot.value.reduce((sum, row) => sum + row.marketCap, 0);
-    return res.json({ totalMarketCap: totalCap, totalVolume24h: snapshot.value.reduce((sum, row) => sum + row.volume24h, 0), btcDominance: 52.4, activeAssets: snapshot.value.length, updatedAt: new Date().toISOString(), stale: snapshot.stale });
+    // Real dominance, computed from the same tracked universe — not a fixed
+    // constant. Null (not a guessed number) if BTC isn't in the response.
+    const btc = snapshot.value.find((row) => row.symbol.toUpperCase() === "BTC");
+    const btcDominance = btc && totalCap > 0 ? Number(((btc.marketCap / totalCap) * 100).toFixed(1)) : null;
+    return res.json({ totalMarketCap: totalCap, totalVolume24h: snapshot.value.reduce((sum, row) => sum + row.volume24h, 0), btcDominance, activeAssets: snapshot.value.length, updatedAt: new Date().toISOString(), stale: snapshot.stale });
   } catch (error) { req.log.error({ error }, "overview failed"); return res.status(502).json({ error: "Market overview is temporarily unavailable." }); }
 });
 
@@ -42,22 +46,27 @@ router.get("/token/:symbol/similar", async (_req, res) => {
   return res.json(markets.value.slice(0, 4));
 });
 
-router.get("/wallet/:address/risk", requireAuth, async (req, res) => {
-  const wallet = await fetchWallet(String(req.params.address));
-  const score = wallet.error ? 0 : Math.min(100, Math.round(42 + wallet.tokenCount * 4));
-  return res.json({ address: req.params.address, score, label: score >= 70 ? "smart money" : score >= 45 ? "active trader" : "needs review" });
+// Was previously a fabricated formula (42 + tokenCount * 4) labeled as a
+// "smart money" / "active trader" score with no real analysis behind it —
+// removed per the Blueprint's data-integrity rule against fabricated
+// confidence. Real wallet risk scoring needs transaction-history and
+// counterparty analysis this project doesn't have yet, so this is honest
+// about that instead of guessing.
+router.get("/wallet/:address/risk", requireAuth, (req, res) => {
+  return res.json({ address: req.params.address, score: null, label: null, status: "unavailable", message: "Intelligence degraded — source unavailable. Wallet risk scoring needs transaction-history analysis this build doesn't have yet." });
 });
 router.get("/wallet/:address/pnl", requireAuth, (_req, res) => res.json({ periods: { "7d": null, "30d": null, "90d": null }, note: "Historical PnL becomes available after wallet activity is indexed." }));
 
-router.get("/onchain/transfers", async (req, res) => {
-  const transfers = [
-    { chain: "SOL", type: "Large transfer", value: 1200000, time: "2m ago" },
-    { chain: "ETH", type: "DEX swap", value: 860000, time: "6m ago" },
-    { chain: "BASE", type: "Bridge in", value: 410000, time: "11m ago" },
-  ];
-  return res.json(transfers);
-});
-router.get("/onchain/entities", (_req, res) => res.json([{ name: "Binance Hot Wallet", type: "Exchange", chain: "Multi" }, { name: "Jump Trading", type: "Market Maker", chain: "SOL" }, { name: "Jito Foundation", type: "Protocol", chain: "SOL" }]));
+// Both endpoints below previously returned a fixed, hardcoded array on every
+// request (three fake transfers, three fake entities) — presented as if it
+// were a live feed. Removed per the Blueprint's data-integrity rule: a
+// general "large transfers across the whole chain" firehose and a verified
+// entity-labeling directory both need a data source this project doesn't
+// have wired up yet (a whale-tracking feed / curated, address-verified
+// entity database, respectively). Returning an honest unavailable state
+// here instead of guessing or fabricating rows.
+router.get("/onchain/transfers", (_req, res) => res.json({ transfers: [], status: "unavailable", message: "Intelligence degraded — source unavailable. A live large-transfer feed isn't connected yet." }));
+router.get("/onchain/entities", (_req, res) => res.json({ entities: [], status: "unavailable", message: "Intelligence degraded — source unavailable. A verified entity-labeling directory isn't connected yet." }));
 
 router.get("/history", requireAuth, async (req, res) => {
   try { return res.json(await listRows("zenthra_chats", `select=id,title,created_at,updated_at&user_id=eq.${encodeURIComponent(req.user!.id)}&order=updated_at.desc&limit=50`)); }

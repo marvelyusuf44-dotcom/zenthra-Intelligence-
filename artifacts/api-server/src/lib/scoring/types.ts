@@ -38,7 +38,6 @@ export interface SignalResult {
   entry: number;
   stopLoss: number;
   takeProfit: { tp1: number; tp2: number; tp3: number };
-  leverage: number;
   decimals: number;
   score: ScoreBreakdown;
   smc: SmcAnalysis;

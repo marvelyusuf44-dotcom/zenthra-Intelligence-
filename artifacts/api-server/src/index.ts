@@ -23,11 +23,11 @@ if (Number.isNaN(port) || port <= 0) {
 
 const httpServer = createServer(app);
 
-httpServer.on("error", (err) => {
-  logger.error({ err }, "Error listening on port");
-  process.exit(1);
-});
+httpServer.listen(port, (err) => {
+  if (err) {
+    logger.error({ err }, "Error listening on port");
+    process.exit(1);
+  }
 
-httpServer.listen(port, () => {
   logger.info({ port }, "Server listening");
 });

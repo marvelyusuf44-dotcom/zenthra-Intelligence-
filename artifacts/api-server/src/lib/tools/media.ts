@@ -32,6 +32,16 @@ export interface StickerResult {
   sizeBytes: number;
 }
 
+// Struktur minimal instance `sharp` yang beneran dipakai di bawah — bukan
+// definisi tipe lengkap package `sharp` (biar gak perlu depend ke tipe
+// lengkapnya di titik dynamic-import ini).
+interface SharpInstance {
+  resize(width: number, height: number, options: { fit: string; background: { r: number; g: number; b: number; alpha: number } }): SharpInstance;
+  webp(options: { quality: number }): SharpInstance;
+  toBuffer(): Promise<Buffer>;
+}
+type SharpFactory = (input: Buffer) => SharpInstance;
+
 /** Convert gambar (URL atau base64) jadi stiker WebP 512x512, dikompres sampai <100KB. */
 export async function makeSticker(imageInput: { url?: string; base64?: string }): Promise<StickerResult> {
   let buffer: Buffer;
@@ -45,10 +55,13 @@ export async function makeSticker(imageInput: { url?: string; base64?: string })
     throw new Error("Butuh `url` atau `base64` gambar sumber.");
   }
 
-  let sharpFn: any;
+  let sharpFn: SharpFactory;
   try {
-    const sharpModule: any = await import("sharp");
-    sharpFn = sharpModule.default ?? sharpModule;
+    const sharpModule = await import("sharp");
+    // Sama kayak CJS/ESM interop di app.ts: `.default` dicek lewat `unknown`,
+    // bukan `any`, jadi fallback-nya tetap ke-type-check.
+    const maybeWrapped = sharpModule as unknown as { default?: SharpFactory };
+    sharpFn = maybeWrapped.default ?? (sharpModule as unknown as SharpFactory);
   } catch (error) {
     throw new Error(
       `Sticker maker belum bisa dipakai — library gambar (sharp) gagal dimuat di server: ${error instanceof Error ? error.message : error}`,

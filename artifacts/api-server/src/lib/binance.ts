@@ -79,3 +79,47 @@ export async function getMultiTimeframeCandles(symbol: string) {
   ]);
   return { c15m, c1h, c4h };
 }
+
+// --- Below: real data for the Futures Intelligence confluence score
+// (lib/scoring/confluence.ts). Both return null on any failure — the
+// confluence layer treats null as "unavailable" and scores it honestly
+// as 0/weight rather than guessing a value.
+
+export interface FundingSnapshot {
+  fundingRatePct: number; // e.g. 0.01 means 0.01% per funding interval
+  markPrice: number;
+  nextFundingTime: number;
+}
+
+/** Current funding rate for a USDT-margined perpetual — public endpoint, no key required. */
+export async function fetchFundingRate(symbol: string): Promise<FundingSnapshot | null> {
+  const data = await fetchJson<{ lastFundingRate: string; markPrice: string; nextFundingTime: number }>(
+    `${BASE_REST}/fapi/v1/premiumIndex?symbol=${symbol}`
+  );
+  if (!data) return null;
+  const fundingRatePct = parseFloat(data.lastFundingRate) * 100;
+  const markPrice = parseFloat(data.markPrice);
+  if (!Number.isFinite(fundingRatePct) || !Number.isFinite(markPrice)) return null;
+  return { fundingRatePct, markPrice, nextFundingTime: data.nextFundingTime };
+}
+
+export interface OpenInterestTrend {
+  latest: number;
+  changePct: number; // % change in open interest across the lookback window
+}
+
+/**
+ * Open-interest trend over the last `periods` hourly buckets — a single
+ * point-in-time OI reading can't tell direction, so this compares the
+ * oldest vs newest bucket in the window (public endpoint, no key required).
+ */
+export async function fetchOpenInterestTrend(symbol: string, periods = 8): Promise<OpenInterestTrend | null> {
+  const data = await fetchJson<Array<{ sumOpenInterest: string; timestamp: number }>>(
+    `${BASE_REST}/futures/data/openInterestHist?symbol=${symbol}&period=1h&limit=${periods}`
+  );
+  if (!data || data.length < 2) return null;
+  const first = parseFloat(data[0].sumOpenInterest);
+  const last = parseFloat(data[data.length - 1].sumOpenInterest);
+  if (!Number.isFinite(first) || !Number.isFinite(last) || first === 0) return null;
+  return { latest: last, changePct: ((last - first) / first) * 100 };
+}

@@ -1,4 +1,4 @@
-import express, { type Express, type Request as ExpressRequest, type Response as ExpressResponse } from "express";
+import express, { type Express, type RequestHandler, type Request as ExpressRequest, type Response as ExpressResponse } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import helmet from "helmet";
@@ -8,19 +8,28 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// A CJS module loaded under moduleResolution "bundler" sometimes ends up
+// wrapped in `.default` at runtime even though its own type declarations
+// say it's directly callable (or vice versa) — this checks for `.default`
+// through `unknown` (not `any`) so the fallback is still real type-checked,
+// then asserts the final shape we actually call it as.
+function resolveCjsDefault<T>(mod: T): T {
+  const maybeWrapped = mod as unknown as { default?: T };
+  return maybeWrapped.default ?? mod;
+}
+type MiddlewareFactory = (options?: unknown) => RequestHandler;
+
 // pino-http, helmet, dan express-rate-limit: Vercel's build resolve CJS
 // default export mereka jadi namespace object (bukan fungsi langsung) di
 // bawah moduleResolution "bundler" — walau runtime-nya (baik esbuild buat
 // Render, maupun Vercel Node runtime) tetap kerja normal. Ini murni masalah
-// TIPE, bukan bug jalan, jadi kita cast ke `any` di titik panggilnya aja.
-//
-// DIPERBAIKI LAGI: ternyata bukan cuma soal tipe — di runtime Vercel, module
-// ini BENERAN bisa muncul terbungkus di properti `.default` (bukan langsung
-// callable). Pola `(x as any).default ?? x` ini aman buat DUA kemungkinan
-// bentuk sekaligus, gak asal maksa panggil kayak sebelumnya.
-const pinoHttpFn: any = (pinoHttp as any).default ?? pinoHttp;
-const helmetFn: any = (helmet as any).default ?? helmet;
-const rateLimitFn: any = (rateLimit as any).default ?? rateLimit;
+// TIPE, bukan bug jalan, jadi resolusinya di-handle sekali lewat
+// `resolveCjsDefault` di atas, lalu di-assert ke bentuk callable yang kita
+// pakai (opsional options -> RequestHandler) — behaviornya identik dengan
+// sebelumnya (`(x as any).default ?? x`), cuma sekarang lewat `unknown`.
+const pinoHttpFn = resolveCjsDefault(pinoHttp) as unknown as MiddlewareFactory;
+const helmetFn = resolveCjsDefault(helmet) as unknown as MiddlewareFactory;
+const rateLimitFn = resolveCjsDefault(rateLimit) as unknown as MiddlewareFactory;
 
 app.use(
   pinoHttpFn({

@@ -2,7 +2,7 @@
 //
 // DIPERBAIKI dari versi awal: yang lama pakai @replit/connectors-sdk
 // (connectors.proxy("supabase", ...)) — itu mekanisme khusus Replit yang TIDAK
-// akan jalan begitu API server ini di-deploy ke Railway/di luar Replit.
+// akan jalan begitu API server ini di-deploy ke Vercel/di luar Replit.
 // Sekarang pakai koneksi REST langsung ke Supabase pakai SUPABASE_URL +
 // SUPABASE_SERVICE_ROLE_KEY (lihat .env.example) — portable di platform mana pun.
 //

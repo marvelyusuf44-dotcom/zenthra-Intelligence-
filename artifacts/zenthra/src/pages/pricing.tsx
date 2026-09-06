@@ -80,12 +80,12 @@ export default function PricingPage() {
             onClick={() => plan.id !== 'free' && setSelected(plan.id)}
             disabled={plan.id === 'free'}
             className={`panel rounded-xl p-4 text-left transition-colors ${
-              selected === plan.id ? 'border-cyan-400/50 bg-cyan-400/[.06]' : ''
-            } ${plan.id === 'free' ? 'cursor-default opacity-70' : 'hover:border-cyan-400/40'}`}
+              selected === plan.id ? 'border-blue-600/50 bg-blue-600/[.06]' : ''
+            } ${plan.id === 'free' ? 'cursor-default opacity-70' : 'hover:border-blue-600/40'}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-100">{plan.label}</span>
-              {selected === plan.id && <Check size={16} className="text-cyan-300" />}
+              {selected === plan.id && <Check size={16} className="text-blue-500" />}
             </div>
             <div className="mt-1 font-data text-lg text-slate-200">
               {formatIdr(plan.priceIdrPerMonth)}
@@ -103,7 +103,7 @@ export default function PricingPage() {
       {selected && !claimed && (
         <div className="panel mt-6 rounded-xl p-5">
           <div className="flex items-center gap-2 text-sm text-slate-200">
-            <QrCode size={16} className="text-cyan-300" />
+            <QrCode size={16} className="text-blue-500" />
             Scan QRIS buat bayar tier {plans.find((p) => p.id === selected)?.label}
           </div>
           <img src={qrisImage} alt="QRIS Zenthra" className="mx-auto mt-4 w-56 rounded-lg border border-slate-800" />
@@ -115,7 +115,7 @@ export default function PricingPage() {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Opsional: jam bayar / 4 digit terakhir referensi (bantu admin cocokin)"
-            className="mt-3 w-full rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-300 outline-none focus:border-cyan-400/40"
+            className="mt-3 w-full rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-300 outline-none focus:border-blue-600/40"
           />
           {error && (
             <div className="mt-3 flex items-start gap-2 rounded-lg border border-rose-400/30 bg-rose-400/[.06] p-3 text-xs text-rose-200">
@@ -127,7 +127,7 @@ export default function PricingPage() {
             data-testid="button-confirm-payment"
             onClick={() => void submitClaim()}
             disabled={submitting}
-            className="mt-4 w-full rounded-lg bg-cyan-300 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200 disabled:bg-slate-700 disabled:text-slate-500"
+            className="mt-4 w-full rounded-lg bg-blue-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-blue-300 disabled:bg-slate-700 disabled:text-slate-500"
           >
             {submitting ? 'Mengirim…' : 'Saya sudah bayar'}
           </button>
